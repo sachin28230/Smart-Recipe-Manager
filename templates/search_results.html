@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Search Results - Smart Recipe Making</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+            color: #222;
+        }
+
+        .navbar {
+            background: #5b2c2c;
+            color: white;
+            padding: 18px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h2 {
+            margin: 0;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1150px;
+            margin: 35px auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .header h1 {
+            color: #5b2c2c;
+            margin-bottom: 10px;
+        }
+
+        .section-title {
+            color: #5b2c2c;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        /* Local recipe */
+
+        .recipe-card {
+            background: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .recipe-card h2 {
+            margin-top: 0;
+            color: #5b2c2c;
+        }
+
+        .details {
+            color: #666;
+            line-height: 1.8;
+        }
+
+        .view-button {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 18px;
+            background: #5b2c2c;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        .view-button:hover {
+            background: #7a3b3b;
+        }
+
+        /* Global recipes */
+
+        .global-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 25px;
+        }
+
+        .global-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .global-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 7px 20px rgba(0,0,0,0.18);
+        }
+
+        .global-card img {
+            width: 100%;
+            height: 210px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .global-content {
+            padding: 20px;
+        }
+
+        .global-content h3 {
+            margin-top: 0;
+            color: #5b2c2c;
+            font-size: 21px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #f1e4e4;
+            color: #5b2c2c;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            margin-right: 5px;
+            margin-bottom: 8px;
+        }
+
+        .ingredients {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-top: 10px;
+        }
+
+        .source-button {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 16px;
+            background: #5b2c2c;
+            color: white;
+            text-decoration: none;
+            border-radius: 7px;
+        }
+
+        .source-button:hover {
+            background: #7a3b3b;
+        }
+
+        .no-results {
+            background: white;
+            padding: 40px;
+            text-align: center;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .global-intro {
+            color: #666;
+            margin-top: -10px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 600px) {
+
+            .navbar {
+                padding: 15px 20px;
+            }
+
+            .navbar h2 {
+                font-size: 18px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .global-card img {
+                height: 190px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="navbar">
+
+    <h2>🍳 Smart Recipe Making</h2>
+
+    <a href="/dashboard">Dashboard</a>
+
+</div>
+
+
+<div class="container">
+
+    <div class="header">
+
+        <h1>🔎 Search Results</h1>
+
+        <p>
+            Results for:
+            <strong>{{ query }}</strong>
+        </p>
+
+    </div>
+
+
+    <!-- ============================= -->
+    <!-- YOUR DATABASE RECIPES -->
+    <!-- ============================= -->
+
+    {% if recipes %}
+
+        <h2 class="section-title">
+            🏠 Recipes in Smart Recipe Making
+        </h2>
+
+        <p>
+            Found <strong>{{ recipes|length }}</strong>
+            recipe(s) in your database.
+        </p>
+
+
+        {% for recipe in recipes %}
+
+            <div class="recipe-card">
+
+                <h2>{{ recipe.name }}</h2>
+
+                <p>
+                    {{ recipe.description }}
+                </p>
+
+                <div class="details">
+
+                    ⏱️ Cooking time:
+                    {{ recipe.cooking_time }} minutes
+
+                    <br>
+
+                    🔥 Calories:
+                    {{ recipe.calories or 0 }}
+
+                    <br>
+
+                    💪 Protein:
+                    {{ recipe.protein or 0 }} g
+
+                </div>
+
+                <a class="view-button"
+                   href="/recipe/{{ recipe.id }}">
+                    View Recipe
+                </a>
+
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+
+
+    <!-- ============================= -->
+    <!-- GLOBAL THEMEALDB RECIPES -->
+    <!-- ============================= -->
+
+    {% if external_recipes %}
+
+        <h2 class="section-title">
+            🌎 More Recipes From Around The World
+        </h2>
+
+        <p class="global-intro">
+            We also found recipes from our global recipe database.
+        </p>
+
+
+        <div class="global-grid">
+
+            {% for meal in external_recipes %}
+
+                <div class="global-card">
+
+                    <!-- Recipe Image -->
+
+                    {% if meal.strMealThumb %}
+
+                        <img
+                            src="{{ meal.strMealThumb }}"
+                            alt="{{ meal.strMeal }}"
+                        >
+
+                    {% endif %}
+
+
+                    <div class="global-content">
+
+                        <!-- Recipe Name -->
+
+                        <h3>
+                            {{ meal.strMeal }}
+                        </h3>
+
+
+                        <!-- Category -->
+
+                        {% if meal.strCategory %}
+
+                            <span class="badge">
+                                🍽️ {{ meal.strCategory }}
+                            </span>
+
+                        {% endif %}
+
+
+                        <!-- Country / Area -->
+
+                        {% if meal.strArea %}
+
+                            <span class="badge">
+                                🌍 {{ meal.strArea }}
+                            </span>
+
+                        {% endif %}
+
+
+                        <!-- Ingredients -->
+
+                        <div class="ingredients">
+
+                            <strong>🥕 Ingredients:</strong>
+
+                            <br>
+
+                            {% set ingredient_count = namespace(value=0) %}
+
+                            {% for i in range(1, 21) %}
+
+                                {% set ingredient =
+                                    meal["strIngredient" ~ i]
+                                %}
+
+                                {% if ingredient and
+                                      ingredient.strip() %}
+
+                                    {% if ingredient_count.value < 8 %}
+
+                                        • {{ ingredient }}
+
+                                        {% if ingredient_count.value < 7 %}
+                                            ,
+                                        {% endif %}
+
+                                        {% set ingredient_count.value =
+                                            ingredient_count.value + 1 %}
+
+                                    {% endif %}
+
+                                {% endif %}
+
+                            {% endfor %}
+
+                        </div>
+
+
+                        <!-- Original Recipe -->
+
+                        {% if meal.strSource %}
+
+                          <a
+                            class="source-button"
+                            href="{{ url_for('global_recipe', meal_id=meal.idMeal) }}"
+                            >
+                              🍳 View Recipe
+                        </a>
+                        {% elif meal.strYoutube %}
+
+                            <a
+                                class="source-button"
+                                href="{{ meal.strYoutube }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                ▶️ Watch Recipe
+                            </a>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% endif %}
+
+
+
+    <!-- ============================= -->
+    <!-- NO RESULTS -->
+    <!-- ============================= -->
+
+    {% if not recipes and not external_recipes %}
+
+        <div class="no-results">
+
+            <h2>😕 No recipes found</h2>
+
+            <p>
+                We couldn't find a recipe matching
+                <strong>{{ query }}</strong>.
+            </p>
+
+            <p>
+                Try searching for another dish,
+                ingredient, or recipe name.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+
+</div>
+
+</body>
+</html>

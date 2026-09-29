@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>{{ recipe.name }} - Smart Recipe Making</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f5faf5;
+    color:#1e2e22;
+}
+
+/* NAVBAR */
+
+.navbar{
+    position:sticky;
+    top:0;
+    z-index:100;
+
+    background:#fff;
+
+    padding:15px 6%;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    border-bottom:1px solid #e0e9e0;
+
+    box-shadow:0 3px 15px rgba(0,0,0,.04);
+}
+
+.brand{
+    font-size:20px;
+    font-weight:800;
+    color:#1b5e20;
+}
+
+.navbar a{
+    color:#2e7d32;
+    text-decoration:none;
+    margin-left:18px;
+    font-weight:700;
+    font-size:14px;
+}
+
+.navbar a:hover{
+    color:#145a18;
+}
+
+
+/* CONTAINER */
+
+.container{
+    max-width:1050px;
+    margin:30px auto;
+    padding:0 18px;
+}
+
+.card{
+    background:#fff;
+    border-radius:26px;
+    overflow:hidden;
+
+    box-shadow:
+        0 18px 50px rgba(35,75,40,.11);
+
+    border:1px solid #e2ebe2;
+}
+
+
+/* HERO */
+
+.hero{
+    position:relative;
+    height:390px;
+    background:#e5efe5;
+    overflow:hidden;
+}
+
+.hero img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+}
+
+.hero:after{
+    content:"";
+    position:absolute;
+    inset:0;
+
+    background:
+        linear-gradient(
+            transparent 25%,
+            rgba(0,0,0,.75)
+        );
+}
+
+.hero-text{
+    position:absolute;
+    z-index:3;
+
+    left:34px;
+    right:34px;
+    bottom:28px;
+
+    color:#fff;
+}
+
+.tag{
+    display:inline-block;
+
+    background:#eaf7ec;
+    color:#2e7d32;
+
+    border-radius:30px;
+
+    padding:7px 13px;
+
+    font-size:11px;
+    font-weight:800;
+}
+
+.hero h1{
+    font-size:42px;
+    margin:10px 0 6px;
+
+    text-shadow:
+        0 2px 8px rgba(0,0,0,.3);
+}
+
+.hero-text p{
+    margin:0;
+    color:#eef5ef;
+    font-size:15px;
+    line-height:1.5;
+}
+
+
+/* IMAGE FALLBACK */
+
+.image-fallback{
+    width:100%;
+    height:100%;
+
+    display:flex;
+    flex-direction:column;
+
+    align-items:center;
+    justify-content:center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #e8f5e9,
+            #c8e6c9
+        );
+
+    color:#2e7d32;
+
+    font-weight:700;
+
+    font-size:16px;
+}
+
+.image-fallback span{
+    font-size:70px;
+    margin-bottom:10px;
+}
+
+
+/* BODY */
+
+.body{
+    padding:30px;
+}
+
+
+/* INFO */
+
+.info{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+
+    margin-bottom:28px;
+}
+
+.info-box{
+    background:#f3f9f3;
+
+    border:1px solid #e0ebe0;
+
+    border-radius:15px;
+
+    padding:16px;
+
+    text-align:center;
+
+    color:#617064;
+
+    transition:.2s;
+}
+
+.info-box:hover{
+    transform:translateY(-3px);
+}
+
+.info-box strong{
+    display:block;
+
+    color:#1b5e20;
+
+    font-size:21px;
+
+    margin-bottom:4px;
+}
+
+
+/* SECTIONS */
+
+.section{
+    margin-top:32px;
+}
+
+.section h2{
+    color:#1b5e20;
+
+    font-size:24px;
+
+    margin:0 0 14px;
+}
+
+
+/* INGREDIENTS / INSTRUCTIONS / TIPS */
+
+.ingredients,
+.instructions,
+.tips{
+
+    background:#f8fbf8;
+
+    border:1px solid #e3ece3;
+
+    border-radius:16px;
+
+    padding:20px;
+
+    line-height:1.85;
+
+    white-space:pre-line;
+
+    color:#4e5c51;
+}
+
+
+/* NUTRITION */
+
+.nutrition{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+}
+
+.nutrition-box{
+
+    background:
+        linear-gradient(
+            135deg,
+            #eff8ef,
+            #fff
+        );
+
+    border:1px solid #deeadf;
+
+    border-radius:16px;
+
+    padding:18px;
+
+    text-align:center;
+
+    transition:.2s;
+}
+
+.nutrition-box:hover{
+    transform:translateY(-3px);
+}
+
+.nutrition-box strong{
+
+    display:block;
+
+    color:#2e7d32;
+
+    font-size:22px;
+
+    margin-bottom:4px;
+}
+
+
+/* FAVORITE */
+
+.favorite-button{
+
+    margin-top:28px;
+
+    padding:13px 20px;
+
+    border:0;
+
+    border-radius:12px;
+
+    background:#e74c3c;
+
+    color:#fff;
+
+    font-weight:800;
+
+    font-size:15px;
+
+    cursor:pointer;
+
+    transition:.2s;
+}
+
+.favorite-button:hover{
+    background:#c0392b;
+    transform:translateY(-2px);
+}
+
+
+/* BACK */
+
+.back-button{
+
+    display:inline-block;
+
+    margin-top:14px;
+
+    padding:12px 18px;
+
+    background:#2e7d32;
+
+    color:#fff;
+
+    border-radius:11px;
+
+    text-decoration:none;
+
+    font-weight:800;
+
+    transition:.2s;
+}
+
+.back-button:hover{
+    background:#1b5e20;
+}
+
+
+/* REVIEWS */
+
+.rating-summary,
+.review-form,
+.review-card{
+
+    background:#f8fbf8;
+
+    border:1px solid #e2ebe2;
+
+    border-radius:16px;
+
+    padding:20px;
+
+    margin-bottom:16px;
+}
+
+.average-rating{
+
+    font-size:30px;
+
+    font-weight:800;
+
+    color:#f39c12;
+}
+
+.stars,
+.review-rating{
+
+    color:#f39c12;
+
+    font-size:22px;
+
+    letter-spacing:2px;
+}
+
+.review-form label{
+
+    display:block;
+
+    font-weight:700;
+
+    margin:10px 0 6px;
+}
+
+.rating-select,
+.review-textarea{
+
+    width:100%;
+
+    padding:12px;
+
+    border:1px solid #d6e1d6;
+
+    border-radius:10px;
+
+    font-size:14px;
+}
+
+.review-textarea{
+
+    min-height:110px;
+
+    resize:vertical;
+}
+
+.review-button{
+
+    margin-top:10px;
+
+    padding:11px 18px;
+
+    background:#2e7d32;
+
+    color:#fff;
+
+    border:0;
+
+    border-radius:10px;
+
+    font-weight:800;
+
+    cursor:pointer;
+}
+
+.review-header{
+
+    display:flex;
+
+    justify-content:space-between;
+}
+
+.review-date{
+
+    font-size:12px;
+    color:#888;
+}
+
+.review-text{
+
+    white-space:pre-line;
+
+    color:#566158;
+
+    line-height:1.6;
+}
+
+.no-reviews{
+    color:#777;
+}
+
+
+/* RECOMMENDATIONS */
+
+.recommendation-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:18px;
+}
+
+.recommendation-card{
+
+    overflow:hidden;
+
+    background:#fff;
+
+    border:1px solid #e0e9e0;
+
+    border-radius:17px;
+
+    box-shadow:
+        0 8px 24px rgba(35,75,40,.07);
+
+    transition:.25s;
+}
+
+.recommendation-card:hover{
+
+    transform:translateY(-5px);
+
+    box-shadow:
+        0 15px 35px rgba(35,75,40,.12);
+}
+
+.recommendation-card img{
+
+    width:100%;
+
+    height:155px;
+
+    object-fit:cover;
+
+    display:block;
+
+    background:#e8f5e9;
+}
+
+.recommendation-placeholder{
+
+    width:100%;
+    height:155px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+    justify-content:center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #e8f5e9,
+            #c8e6c9
+        );
+
+    color:#2e7d32;
+
+    font-weight:700;
+}
+
+.recommendation-placeholder span{
+    font-size:45px;
+    margin-bottom:5px;
+}
+
+.recommendation-content{
+    padding:15px;
+}
+
+.recommendation-card h3{
+    margin:0;
+    color:#2e7d32;
+}
+
+.recommendation-card p{
+    font-size:13px;
+    color:#5d685f;
+    line-height:1.5;
+}
+
+.similarity{
+
+    display:inline-block;
+
+    margin:7px 0;
+
+    padding:5px 9px;
+
+    border-radius:20px;
+
+    background:#e8f5e9;
+
+    color:#2e7d32;
+
+    font-size:12px;
+
+    font-weight:800;
+}
+
+.recommendation-button{
+
+    display:inline-block;
+
+    padding:9px 13px;
+
+    background:#2e7d32;
+
+    color:#fff;
+
+    border-radius:9px;
+
+    font-size:13px;
+
+    font-weight:800;
+
+    text-decoration:none;
+}
+
+
+/* MOBILE */
+
+@media(max-width:750px){
+
+    .navbar{
+        padding:13px 18px;
+    }
+
+    .info,
+    .nutrition{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .recommendation-grid{
+        grid-template-columns:1fr;
+    }
+
+    .hero{
+        height:330px;
+    }
+
+    .hero h1{
+        font-size:32px;
+    }
+
+    .body{
+        padding:20px;
+    }
+}
+
+@media(max-width:480px){
+
+    .navbar{
+        flex-direction:column;
+        gap:10px;
+    }
+
+    .navbar a{
+        margin-left:8px;
+    }
+
+    .info,
+    .nutrition{
+        grid-template-columns:1fr;
+    }
+
+    .hero{
+        height:300px;
+    }
+
+    .hero-text{
+        left:20px;
+        right:20px;
+    }
+
+    .hero h1{
+        font-size:28px;
+    }
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- NAVBAR -->
+
+<nav class="navbar">
+
+    <div class="brand">
+        🍴 Smart Recipe Making
+    </div>
+
+    <div>
+
+        <a href="{{ url_for('dashboard') }}">
+            Dashboard
+        </a>
+
+        <a href="{{ url_for('logout') }}">
+            Logout
+        </a>
+
+    </div>
+
+</nav>
+
+
+<div class="container">
+
+<div class="card">
+
+
+<!-- ================= HERO ================= -->
+
+<div class="hero">
+
+    <img
+        id="recipeImage"
+        src="{{ url_for('recipe_image', recipe_id=recipe.id) }}"
+        alt="{{ recipe.name }}"
+        onerror="showImageFallback(this)"
+    >
+
+    <div
+        id="imageFallback"
+        class="image-fallback"
+        style="display:none;"
+    >
+        <span>🍽️</span>
+        {{ recipe.name }}
+    </div>
+
+
+    <div class="hero-text">
+
+        <span class="tag">
+            SMART RECIPE
+        </span>
+
+        <h1>
+            {{ recipe.name }}
+        </h1>
+
+        <p>
+            {{ recipe.description }}
+        </p>
+
+    </div>
+
+</div>
+
+
+<div class="body">
+
+
+<!-- RECIPE INFO -->
+
+<div class="info">
+
+    <div class="info-box">
+        <strong>
+            ⏱ {{ recipe.cooking_time }}
+        </strong>
+        Minutes
+    </div>
+
+    <div class="info-box">
+        <strong>
+            🔥 {{ recipe.calories or 0 }}
+        </strong>
+        Calories
+    </div>
+
+    <div class="info-box">
+        <strong>
+            💪 {{ recipe.protein or 0 }}g
+        </strong>
+        Protein
+    </div>
+
+    <div class="info-box">
+        <strong>
+            🍽 Easy
+        </strong>
+        Recipe
+    </div>
+
+</div>
+
+
+<!-- INGREDIENTS -->
+
+<div class="section">
+
+    <h2>🥕 Ingredients</h2>
+
+    <div class="ingredients">
+        {{ recipe.ingredients }}
+    </div>
+
+</div>
+
+
+<!-- INSTRUCTIONS -->
+
+<div class="section">
+
+    <h2>👨‍🍳 Preparation Instructions</h2>
+
+    <div class="instructions">
+        {{ recipe.instructions }}
+    </div>
+
+</div>
+
+
+<!-- NUTRITION -->
+
+<div class="section">
+
+    <h2>🍎 Nutrition Information</h2>
+
+    <div class="nutrition">
+
+        <div class="nutrition-box">
+            <strong>
+                🔥 {{ recipe.calories or 0 }}
+            </strong>
+            Calories
+        </div>
+
+        <div class="nutrition-box">
+            <strong>
+                💪 {{ recipe.protein or 0 }}g
+            </strong>
+            Protein
+        </div>
+
+        <div class="nutrition-box">
+            <strong>
+                🌾 {{ recipe.carbohydrates or 0 }}g
+            </strong>
+            Carbohydrates
+        </div>
+
+        <div class="nutrition-box">
+            <strong>
+                🥑 {{ recipe.fat or 0 }}g
+            </strong>
+            Fat
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- NUTRITION TIPS -->
+
+<div class="section">
+
+    <h2>💡 Nutrition Tips</h2>
+
+    <div class="tips">
+
+        {% if recipe.nutrition_tips %}
+
+            {{ recipe.nutrition_tips }}
+
+        {% else %}
+
+            Enjoy this recipe as part of a balanced diet.
+            Adjust portion size according to your nutritional needs.
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- REVIEWS -->
+
+<div class="section">
+
+    <h2>⭐ Ratings & Reviews</h2>
+
+    <div class="rating-summary">
+
+        {% if average_rating %}
+
+            <div class="average-rating">
+                {{ average_rating }} / 5
+            </div>
+
+            <div class="stars">
+
+                {% for i in range(1,6) %}
+
+                    {% if average_rating >= i %}
+                        ★
+                    {% else %}
+                        ☆
+                    {% endif %}
+
+                {% endfor %}
+
+            </div>
+
+            <p>
+                Based on {{ review_count }}
+                review{% if review_count != 1 %}s{% endif %}
+            </p>
+
+        {% else %}
+
+            <div class="average-rating">
+                No ratings yet
+            </div>
+
+            <p>
+                Be the first person to review this recipe!
+            </p>
+
+        {% endif %}
+
+    </div>
+
+
+    {% if user_review %}
+
+        <div class="review-form">
+
+            <h3>Your Review</h3>
+
+            <div class="review-rating">
+
+                {% for i in range(1,6) %}
+
+                    {% if user_review.rating >= i %}
+                        ★
+                    {% else %}
+                        ☆
+                    {% endif %}
+
+                {% endfor %}
+
+            </div>
+
+            {% if user_review.review %}
+
+                <p class="review-text">
+                    {{ user_review.review }}
+                </p>
+
+            {% else %}
+
+                <p class="review-text">
+                    You did not write a review.
+                </p>
+
+            {% endif %}
+
+        </div>
+
+    {% else %}
+
+        <div class="review-form">
+
+            <h3>Write a Review</h3>
+
+            <form
+                action="/review/{{ recipe.id }}"
+                method="POST"
+            >
+
+                <label for="rating">
+                    Rating
+                </label>
+
+                <select
+                    id="rating"
+                    name="rating"
+                    class="rating-select"
+                    required
+                >
+
+                    <option value="">
+                        Select a rating
+                    </option>
+
+                    <option value="5">
+                        ★★★★★ - Excellent
+                    </option>
+
+                    <option value="4">
+                        ★★★★☆ - Very Good
+                    </option>
+
+                    <option value="3">
+                        ★★★☆☆ - Good
+                    </option>
+
+                    <option value="2">
+                        ★★☆☆☆ - Fair
+                    </option>
+
+                    <option value="1">
+                        ★☆☆☆☆ - Poor
+                    </option>
+
+                </select>
+
+
+                <label for="review">
+                    Your Review
+                </label>
+
+                <textarea
+                    id="review"
+                    name="review"
+                    class="review-textarea"
+                    maxlength="1000"
+                    placeholder="Write your experience with this recipe..."
+                ></textarea>
+
+
+                <button
+                    class="review-button"
+                    type="submit"
+                >
+                    ⭐ Submit Review
+                </button>
+
+            </form>
+
+        </div>
+
+    {% endif %}
+
+
+    <h3>Customer Reviews</h3>
+
+
+    {% if reviews %}
+
+        {% for review in reviews %}
+
+            <div class="review-card">
+
+                <div class="review-header">
+
+                    <strong>
+                        User #{{ review.user_id }}
+                    </strong>
+
+                    <span class="review-date">
+                        {{ review.created_at.strftime('%d %b %Y') }}
+                    </span>
+
+                </div>
+
+
+                <div class="review-rating">
+
+                    {% for i in range(1,6) %}
+
+                        {% if review.rating >= i %}
+                            ★
+                        {% else %}
+                            ☆
+                        {% endif %}
+
+                    {% endfor %}
+
+                </div>
+
+
+                {% if review.review %}
+
+                    <p class="review-text">
+                        {{ review.review }}
+                    </p>
+
+                {% else %}
+
+                    <p class="review-text">
+                        No written review.
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p class="no-reviews">
+            No reviews have been submitted yet.
+        </p>
+
+    {% endif %}
+
+</div>
+
+
+<!-- FAVORITE -->
+
+<form
+    action="/favorite/{{ recipe.id }}"
+    method="POST"
+>
+
+    <button
+        class="favorite-button"
+        type="submit"
+    >
+        ❤️ Add / Remove Favorite
+    </button>
+
+</form>
+
+
+<!-- RECOMMENDATIONS -->
+
+{% if recommendations %}
+
+<div class="section">
+
+    <h2>
+        🤖 Recommended Recipes
+    </h2>
+
+    <p>
+        Recipes similar to
+        <strong>{{ recipe.name }}</strong>.
+    </p>
+
+
+    <div class="recommendation-grid">
+
+        {% for recommended_recipe, similarity_score in recommendations %}
+
+        <div class="recommendation-card">
+
+
+            <img
+                src="{{ url_for('recipe_image', recipe_id=recommended_recipe.id) }}"
+                alt="{{ recommended_recipe.name }}"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+            >
+
+
+            <div
+                class="recommendation-placeholder"
+                style="display:none;"
+            >
+
+                <span>🍽️</span>
+
+                Image unavailable
+
+            </div>
+
+
+            <div class="recommendation-content">
+
+                <h3>
+                    {{ recommended_recipe.name }}
+                </h3>
+
+                <p>
+                    {{ recommended_recipe.description }}
+                </p>
+
+                <p>
+                    ⏱ {{ recommended_recipe.cooking_time }} min
+                    &nbsp;
+                    🔥 {{ recommended_recipe.calories or 0 }}
+                    calories
+                </p>
+
+                <span class="similarity">
+                    🤖 Similarity:
+                    {{ (similarity_score*100)|round|int }}%
+                </span>
+
+                <br>
+                <br>
+
+                <a
+                    class="recommendation-button"
+                    href="/recipe/{{ recommended_recipe.id }}"
+                >
+                    View Recipe →
+                </a>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endif %}
+
+
+<!-- BACK -->
+
+<a
+    class="back-button"
+    href="{{ url_for('dashboard') }}"
+>
+    ← Back to Dashboard
+</a>
+
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+/*
+    If Flask/TheMealDB has no image for this recipe,
+    show a clean recipe-specific placeholder instead
+    of showing an unrelated food image.
+*/
+
+function showImageFallback(image){
+
+    image.style.display = "none";
+
+    const fallback =
+        document.getElementById("imageFallback");
+
+    if(fallback){
+        fallback.style.display = "flex";
+    }
+
+}
+
+</script>
+
+
+</body>
+
+</html>

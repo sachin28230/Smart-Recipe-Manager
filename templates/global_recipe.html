@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>{{ meal.strMeal }} - Smart Recipe Making</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+            color: #222;
+        }
+
+        .navbar {
+            background: #5b2c2c;
+            color: white;
+            padding: 18px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h2 {
+            margin: 0;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 35px auto;
+            padding: 20px;
+        }
+
+        .recipe-header {
+            background: white;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+            margin-bottom: 30px;
+        }
+
+        .recipe-header img {
+            width: 100%;
+            max-height: 450px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .header-content {
+            padding: 30px;
+        }
+
+        .header-content h1 {
+            margin-top: 0;
+            color: #5b2c2c;
+            font-size: 34px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #f1e4e4;
+            color: #5b2c2c;
+            padding: 7px 13px;
+            border-radius: 20px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        .section {
+            background: white;
+            padding: 30px;
+            margin-bottom: 25px;
+            border-radius: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+
+        .section h2 {
+            color: #5b2c2c;
+            margin-top: 0;
+        }
+
+        .ingredients-list {
+            display: grid;
+            grid-template-columns: repeat(
+                auto-fit,
+                minmax(220px, 1fr)
+            );
+            gap: 10px;
+            padding: 0;
+            list-style: none;
+        }
+
+        .ingredients-list li {
+            background: #f8f1f1;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .instructions {
+            line-height: 1.8;
+            white-space: pre-line;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 20px;
+            margin-top: 15px;
+            margin-right: 10px;
+            background: #5b2c2c;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+
+        .button:hover {
+            background: #7a3b3b;
+        }
+
+        @media (max-width: 600px) {
+
+            .navbar {
+                padding: 15px 20px;
+            }
+
+            .navbar h2 {
+                font-size: 18px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .header-content h1 {
+                font-size: 27px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="navbar">
+
+    <h2>🍳 Smart Recipe Making</h2>
+
+    <a href="/dashboard">Dashboard</a>
+
+</div>
+
+
+<div class="container">
+
+    <!-- Recipe Header -->
+
+    <div class="recipe-header">
+
+        {% if meal.strMealThumb %}
+
+            <img
+                src="{{ meal.strMealThumb }}"
+                alt="{{ meal.strMeal }}"
+            >
+
+        {% endif %}
+
+
+        <div class="header-content">
+
+            <h1>{{ meal.strMeal }}</h1>
+
+
+            {% if meal.strCategory %}
+
+                <span class="badge">
+                    🍽️ {{ meal.strCategory }}
+                </span>
+
+            {% endif %}
+
+
+            {% if meal.strArea %}
+
+                <span class="badge">
+                    🌍 {{ meal.strArea }}
+                </span>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- Ingredients -->
+
+    <div class="section">
+
+        <h2>🥕 Ingredients</h2>
+
+        <ul class="ingredients-list">
+
+            {% for i in range(1, 21) %}
+
+                {% set ingredient =
+                    meal["strIngredient" ~ i] %}
+
+                {% set measure =
+                    meal["strMeasure" ~ i] %}
+
+                {% if ingredient and ingredient.strip() %}
+
+                    <li>
+
+                        <strong>{{ ingredient }}</strong>
+
+                        {% if measure and measure.strip() %}
+
+                            — {{ measure }}
+
+                        {% endif %}
+
+                    </li>
+
+                {% endif %}
+
+            {% endfor %}
+
+        </ul>
+
+    </div>
+
+
+    <!-- Instructions -->
+
+    <div class="section">
+
+        <h2>👨‍🍳 Cooking Instructions</h2>
+
+        <div class="instructions">
+
+            {{ meal.strInstructions }}
+
+        </div>
+
+    </div>
+
+
+    <!-- Links -->
+
+    <div class="section">
+
+        <h2>🔗 Recipe Resources</h2>
+
+        {% if meal.strSource %}
+
+            <a
+                class="button"
+                href="{{ meal.strSource }}"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                📖 Original Recipe
+            </a>
+
+        {% endif %}
+
+
+        {% if meal.strYoutube %}
+
+            <a
+                class="button"
+                href="{{ meal.strYoutube }}"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                ▶️ YouTube Video
+            </a>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+</body>
+</html>

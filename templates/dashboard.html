@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard - Smart Recipe Making</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+            color: #222;
+        }
+
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        .navbar {
+            background: #5b2c2c;
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .navbar h2 {
+            margin: 0;
+        }
+
+
+        /* =========================
+           MAIN CONTAINER
+        ========================= */
+
+        .container {
+            max-width: 1100px;
+            margin: 35px auto;
+            padding: 20px;
+        }
+
+
+        /* =========================
+           WELCOME
+        ========================= */
+
+        .welcome {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .welcome h1 {
+            color: #5b2c2c;
+            margin-bottom: 10px;
+        }
+
+        .welcome p {
+            color: #666;
+            font-size: 17px;
+        }
+
+
+        /* =========================
+           SEARCH CARDS
+        ========================= */
+
+        .search-box {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .search-box h2 {
+            color: #5b2c2c;
+            margin-top: 0;
+        }
+
+        .search-box p {
+            color: #666;
+        }
+
+        .search-form {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .search-form input {
+            width: 65%;
+            padding: 14px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        .search-form input:focus {
+            outline: none;
+            border-color: #5b2c2c;
+        }
+
+        .search-form button {
+            padding: 14px 25px;
+            border: none;
+            background: #5b2c2c;
+            color: white;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .search-form button:hover {
+            background: #3f1f1f;
+        }
+
+
+        /* =========================
+           FEATURE CARDS
+        ========================= */
+
+        .section-title {
+            text-align: center;
+            color: #5b2c2c;
+            margin: 40px 0 20px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .feature {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .feature-icon {
+            font-size: 38px;
+            margin-bottom: 10px;
+        }
+
+        .feature h3 {
+            color: #5b2c2c;
+            margin-bottom: 10px;
+        }
+
+        .feature p {
+            color: #666;
+            line-height: 1.5;
+        }
+
+
+        /* =========================
+           BOTTOM NAVIGATION
+        ========================= */
+
+        .bottom-navigation {
+            max-width: 900px;
+            margin: 45px auto 20px;
+            padding: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .bottom-nav-item {
+            min-width: 120px;
+            padding: 12px 15px;
+            text-align: center;
+            text-decoration: none;
+            color: #2e7d32;
+            background: #f5f7f2;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+
+        .bottom-nav-item:hover {
+            background: #e8f5e9;
+        }
+
+        .bottom-nav-item span {
+            display: block;
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .bottom-nav-item small {
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .logout-item {
+            color: #d32f2f;
+        }
+
+        .logout-item:hover {
+            background: #ffebee;
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            .navbar {
+                padding: 18px 20px;
+                text-align: center;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .search-form {
+                flex-direction: column;
+            }
+
+            .search-form input {
+                width: 100%;
+            }
+
+            .search-form button {
+                width: 100%;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .bottom-navigation {
+                flex-wrap: wrap;
+                margin-left: 10px;
+                margin-right: 10px;
+            }
+
+            .bottom-nav-item {
+                min-width: 100px;
+            }
+
+        }
+
+        .recommendations-section {
+    margin-top: 40px;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+}
+
+.recommendations-section h2 {
+    color: #5b2c2c;
+    margin-top: 0;
+}
+
+.recommendation-subtitle {
+    color: #777;
+    margin-bottom: 20px;
+}
+
+.recommendation-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.recommendation-card {
+    background: #f5f7fa;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #eee;
+}
+
+.recommendation-card h3 {
+    color: #2e7d32;
+    margin-top: 0;
+}
+
+.recommendation-card p {
+    color: #555;
+    line-height: 1.5;
+}
+
+.recommendation-info {
+    color: #555;
+    font-size: 14px;
+    margin: 12px 0;
+}
+
+.similarity {
+    display: inline-block;
+    padding: 6px 10px;
+    background: #e8f5e9;
+    color: #2e7d32;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.recommendation-button {
+    display: inline-block;
+    padding: 9px 14px;
+    background: #2e7d32;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.recommendation-button:hover {
+    background: #1b5e20;
+}
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<div class="navbar">
+
+    <h2>
+        🍳 Smart Recipe Making
+    </h2>
+
+</div>
+
+
+<!-- =========================
+     MAIN CONTENT
+========================= -->
+
+<div class="container">
+
+
+    <!-- WELCOME -->
+
+    <div class="welcome">
+
+        <h1>
+            Welcome, {{ user_name }}! 👋
+        </h1>
+
+        <p>
+            Discover recipes, use your available ingredients,
+            and explore smart recipe recommendations.
+        </p>
+
+    </div>
+
+
+    <!-- =========================
+         NORMAL RECIPE SEARCH
+    ========================= -->
+
+    <div class="search-box">
+
+        <h2>
+            🔎 Search for a Recipe
+        </h2>
+
+        <p>
+            Enter the name of a dish to find its recipe.
+        </p>
+
+        <form
+            class="search-form"
+            method="GET"
+            action="/search"
+        >
+
+            <input
+                type="text"
+                name="query"
+                placeholder="Example: Chicken Biryani"
+                required
+            >
+
+            <button type="submit">
+                Search
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- =========================
+         SMART INGREDIENT SEARCH
+    ========================= -->
+
+    <div class="search-box">
+
+        <h2>
+            🥕 Smart Ingredient Search
+        </h2>
+
+        <p>
+            Enter the ingredients you have and discover recipes
+            you can make.
+        </p>
+
+        <form
+            class="search-form"
+            method="GET"
+            action="/smart-search"
+        >
+
+            <input
+                type="text"
+                name="ingredients"
+                placeholder="Example: rice, onion, tomato"
+                required
+            >
+
+            <button type="submit">
+                Find Recipes
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- =========================
+         FEATURES
+    ========================= -->
+
+    <h2 class="section-title">
+        ✨ Smart Recipe Features
+    </h2>
+
+<!-- =========================
+     PERSONALIZED RECOMMENDATIONS
+========================= -->
+
+{% if personalized_recommendations %}
+
+<div class="recommendations-section">
+
+    <h2>🤖 Recommended For You</h2>
+
+    <p class="recommendation-subtitle">
+        Based on your favorite recipes
+    </p>
+
+    <div class="recommendation-grid">
+
+        {% for recommended_recipe, similarity_score in personalized_recommendations %}
+
+        <div class="recommendation-card">
+
+            <h3>
+                {{ recommended_recipe.name }}
+            </h3>
+
+            <p>
+                {{ recommended_recipe.description }}
+            </p>
+
+            <div class="recommendation-info">
+
+                ⏱️ {{ recommended_recipe.cooking_time }} min
+
+                &nbsp; | &nbsp;
+
+                🔥 {{ recommended_recipe.calories or 0 }} calories
+
+            </div>
+
+            <div class="similarity">
+
+                🤖 Similarity:
+                {{ (similarity_score * 100)|round|int }}%
+
+            </div>
+
+            <br>
+
+            <a
+                href="/recipe/{{ recommended_recipe.id }}"
+                class="recommendation-button"
+            >
+                View Recipe →
+            </a>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% else %}
+
+<div class="recommendations-section">
+
+    <h2>🤖 Recommended For You</h2>
+
+    <p class="recommendation-subtitle">
+        Favorite some recipes to get personalized recommendations.
+    </p>
+
+</div>
+
+{% endif %}
+
+    <div class="features">
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                🍲
+            </div>
+
+            <h3>
+                Recipe Collection
+            </h3>
+
+            <p>
+                Explore recipes with ingredients,
+                preparation instructions and cooking information.
+            </p>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                🥗
+            </div>
+
+            <h3>
+                Nutrition Information
+            </h3>
+
+            <p>
+                View calories, protein, carbohydrates,
+                fat and nutrition tips for recipes.
+            </p>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                🤖
+            </div>
+
+            <h3>
+                AI Recipe Recommendations
+            </h3>
+
+            <p>
+                Machine learning analyzes recipe information
+                and recommends similar recipes.
+            </p>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =========================
+         BOTTOM NAVIGATION
+    ========================= -->
+
+    <div class="bottom-navigation">
+
+
+        <a
+            href="/profile"
+            class="bottom-nav-item"
+        >
+
+            <span>👤</span>
+
+            <small>
+                My Profile
+            </small>
+
+        </a>
+
+
+        <a
+            href="/favorites"
+            class="bottom-nav-item"
+        >
+
+            <span>❤️</span>
+
+            <small>
+                My Favorites
+            </small>
+
+        </a>
+
+
+        <a
+            href="/dashboard"
+            class="bottom-nav-item"
+        >
+
+            <span>🏠</span>
+
+            <small>
+                Dashboard
+            </small>
+
+        </a>
+
+
+        <a
+            href="/logout"
+            class="bottom-nav-item logout-item"
+        >
+
+            <span>🚪</span>
+
+            <small>
+                Logout
+            </small>
+
+        </a>
+
+
+    </div>
+
+
+</div>
+
+
+</body>
+
+</html>

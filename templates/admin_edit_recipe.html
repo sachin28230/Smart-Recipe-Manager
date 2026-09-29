@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Recipe - Smart Recipe Making</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #f5f7f2;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: auto;
+            background: white;
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #777;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+            color: #444;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #2e7d32;
+        }
+
+        .button {
+            width: 100%;
+            padding: 14px;
+            background: #2e7d32;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background: #1b5e20;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #2e7d32;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .row .field {
+            flex: 1;
+        }
+
+        @media (max-width: 600px) {
+            .row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>✏️ Edit Recipe</h1>
+
+        <p class="subtitle">
+            Update the recipe information below
+        </p>
+
+        <form method="POST">
+
+            <label>Recipe Name</label>
+            <input
+                type="text"
+                name="name"
+                value="{{ recipe.name }}"
+                required
+            >
+
+            <label>Description</label>
+            <textarea
+                name="description"
+                required
+            >{{ recipe.description }}</textarea>
+
+            <label>Ingredients</label>
+            <textarea
+                name="ingredients"
+                required
+            >{{ recipe.ingredients }}</textarea>
+
+            <label>Preparation Instructions</label>
+            <textarea
+                name="instructions"
+                required
+            >{{ recipe.instructions }}</textarea>
+
+            <div class="row">
+
+                <div class="field">
+                    <label>Cooking Time (minutes)</label>
+                    <input
+                        type="number"
+                        name="cooking_time"
+                        value="{{ recipe.cooking_time }}"
+                        min="0"
+                    >
+                </div>
+
+                <div class="field">
+                    <label>Calories</label>
+                    <input
+                        type="number"
+                        name="calories"
+                        value="{{ recipe.calories or 0 }}"
+                        min="0"
+                    >
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="field">
+                    <label>Protein (g)</label>
+                    <input
+                        type="number"
+                        name="protein"
+                        value="{{ recipe.protein or 0 }}"
+                        min="0"
+                        step="0.1"
+                    >
+                </div>
+
+                <div class="field">
+                    <label>Carbohydrates (g)</label>
+                    <input
+                        type="number"
+                        name="carbohydrates"
+                        value="{{ recipe.carbohydrates or 0 }}"
+                        min="0"
+                        step="0.1"
+                    >
+                </div>
+
+                <div class="field">
+                    <label>Fat (g)</label>
+                    <input
+                        type="number"
+                        name="fat"
+                        value="{{ recipe.fat or 0 }}"
+                        min="0"
+                        step="0.1"
+                    >
+                </div>
+
+            </div>
+
+            <label>Nutrition Tips</label>
+            <textarea
+                name="nutrition_tips"
+            >{{ recipe.nutrition_tips or "" }}</textarea>
+
+            <button type="submit" class="button">
+                💾 Save Changes
+            </button>
+
+        </form>
+
+        <a href="/admin" class="back-link">
+            ← Back to Admin Dashboard
+        </a>
+
+    </div>
+
+</body>
+
+</html>

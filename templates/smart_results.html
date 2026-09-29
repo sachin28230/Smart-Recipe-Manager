@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Smart Recipe Suggestions</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+            color: #222;
+        }
+
+        .navbar {
+            background: #5b2c2c;
+            color: white;
+            padding: 18px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h2 {
+            margin: 0;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1150px;
+            margin: 35px auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #5b2c2c;
+            margin-bottom: 10px;
+        }
+
+        .ingredient-box {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .ingredient-box strong {
+            color: #5b2c2c;
+        }
+
+        .section-title {
+            color: #5b2c2c;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+
+        /* LOCAL ML RECIPE CARDS */
+
+        .recipe-card {
+            background: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .recipe-card h2 {
+            margin-top: 0;
+            color: #5b2c2c;
+        }
+
+        .rank {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .match-text {
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .progress-background {
+            width: 100%;
+            height: 18px;
+            background: #e5e5e5;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: #5b2c2c;
+            border-radius: 10px;
+        }
+
+        .matched {
+            color: green;
+            margin-top: 15px;
+        }
+
+        .details {
+            color: #666;
+            line-height: 1.7;
+            margin-top: 10px;
+        }
+
+        .recipe-link {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 18px;
+            background: #5b2c2c;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        .recipe-link:hover {
+            background: #7a3b3b;
+        }
+
+        .score-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            margin-top: 8px;
+            background: #f5f7fa;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .score-row strong {
+            color: #2e7d32;
+        }
+
+        .combined-score {
+            background: #e8f5e9;
+            font-size: 15px;
+            border: 1px solid #c8e6c9;
+        }
+
+        .combined-score strong {
+            font-size: 17px;
+        }
+
+        /* GLOBAL RECIPES */
+
+        .global-intro {
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .global-grid {
+            display: grid;
+            grid-template-columns: repeat(
+                auto-fit,
+                minmax(270px, 1fr)
+            );
+            gap: 25px;
+        }
+
+        .global-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .global-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 7px 20px rgba(0,0,0,0.18);
+        }
+
+        .global-card img {
+            width: 100%;
+            height: 210px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .global-content {
+            padding: 20px;
+        }
+
+        .global-content h3 {
+            margin-top: 0;
+            color: #5b2c2c;
+            font-size: 21px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #f1e4e4;
+            color: #5b2c2c;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            margin-right: 5px;
+            margin-bottom: 8px;
+        }
+
+        .global-ingredients {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-top: 12px;
+        }
+
+        .global-button {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 17px;
+            background: #5b2c2c;
+            color: white;
+            text-decoration: none;
+            border-radius: 7px;
+        }
+
+        .global-button:hover {
+            background: #7a3b3b;
+        }
+
+        .global-note {
+            background: #fff8e1;
+            border-left: 4px solid #f0ad4e;
+            padding: 12px 15px;
+            margin-bottom: 25px;
+            border-radius: 6px;
+            color: #555;
+        }
+
+        .no-results {
+            background: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 30px;
+            color: #5b2c2c;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+
+            .navbar {
+                padding: 15px 20px;
+            }
+
+            .navbar h2 {
+                font-size: 18px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .global-card img {
+                height: 190px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="navbar">
+
+    <h2>🍳 Smart Recipe Making</h2>
+
+    <a href="/dashboard">
+        Dashboard
+    </a>
+
+</div>
+
+
+<div class="container">
+
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <h1>🥕 Smart Recipe Suggestions</h1>
+
+        <p>
+            Recipes based on the ingredients you have.
+        </p>
+
+    </div>
+
+
+    <!-- USER INGREDIENTS -->
+
+    <div class="ingredient-box">
+
+        <strong>🥕 Your ingredients:</strong>
+
+        {{ ingredients_input }}
+
+    </div>
+
+
+
+    <!-- ================================= -->
+    <!-- YOUR DATABASE + ML RECOMMENDATIONS -->
+    <!-- ================================= -->
+
+    {% if matching_recipes %}
+
+        <h2 class="section-title">
+            🤖 Smart Matches From Your Recipe Database
+        </h2>
+
+        {% for item in matching_recipes %}
+
+            <div class="recipe-card">
+
+                <div class="rank">
+
+                    {% if loop.index == 1 %}
+
+                        🥇 Best Match
+
+                    {% elif loop.index == 2 %}
+
+                        🥈 Second Match
+
+                    {% elif loop.index == 3 %}
+
+                        🥉 Third Match
+
+                    {% else %}
+
+                        #{{ loop.index }} Match
+
+                    {% endif %}
+
+                </div>
+
+
+                <h2>
+                    {{ item.recipe.name }}
+                </h2>
+
+
+                <p>
+                    {{ item.recipe.description }}
+                </p>
+
+
+                <!-- INGREDIENT MATCH -->
+
+                <div class="match-text">
+
+                    Ingredient Match:
+                    {{ item.match_percentage }}%
+
+                </div>
+
+
+                <div class="progress-background">
+
+                    <div
+                        class="progress-bar"
+                        style="width: {{ item.match_percentage }}%;"
+                    >
+                    </div>
+
+                </div>
+
+
+                <!-- SCORE INFORMATION -->
+
+                <div class="score-row">
+
+                    <span>🥕 Ingredient Match</span>
+
+                    <strong>
+                        {{ item.match_percentage }}%
+                    </strong>
+
+                </div>
+
+
+                <div class="score-row">
+
+                    <span>🤖 ML Similarity</span>
+
+                    <strong>
+                        {{ item.ml_similarity }}%
+                    </strong>
+
+                </div>
+
+
+                <div class="score-row combined-score">
+
+                    <span>⭐ Smart Score</span>
+
+                    <strong>
+                        {{ item.combined_score }}%
+                    </strong>
+
+                </div>
+
+
+                <!-- MATCHED INGREDIENTS -->
+
+                <p class="matched">
+
+                    ✅ Matching ingredients:
+
+                    {{ item.matched_ingredients | join(", ") }}
+
+                </p>
+
+
+                <!-- DETAILS -->
+
+                <div class="details">
+
+                    ⏱️ Cooking time:
+                    {{ item.recipe.cooking_time }} minutes
+
+                    <br>
+
+                    🔥 Calories:
+                    {{ item.recipe.calories or 0 }}
+
+                    <br>
+
+                    💪 Protein:
+                    {{ item.recipe.protein or 0 }} g
+
+                </div>
+
+
+                <!-- VIEW LOCAL RECIPE -->
+
+                <a
+                    class="recipe-link"
+                    href="/recipe/{{ item.recipe.id }}"
+                >
+                    View Complete Recipe →
+                </a>
+
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+
+
+    <!-- ================================= -->
+    <!-- GLOBAL THEMEALDB RECIPES -->
+    <!-- ================================= -->
+
+    {% if external_recipes %}
+
+        <h2 class="section-title">
+
+            🌎 Global Recipes Based On Your Ingredients
+
+        </h2>
+
+
+        <p class="global-intro">
+
+            We found additional recipes from around the world
+            using your ingredients.
+
+        </p>
+
+
+        <div class="global-note">
+
+            🌍 These recipes come from an external recipe database.
+            Select <strong>View Recipe</strong> to see the complete
+            recipe details.
+
+        </div>
+
+
+        <div class="global-grid">
+
+            {% for meal in external_recipes %}
+
+                <div class="global-card">
+
+
+                    <!-- RECIPE IMAGE -->
+
+                    {% if meal.strMealThumb %}
+
+                        <img
+                            src="{{ meal.strMealThumb }}"
+                            alt="{{ meal.strMeal }}"
+                        >
+
+                    {% endif %}
+
+
+                    <div class="global-content">
+
+
+                        <!-- RECIPE NAME -->
+
+                        <h3>
+                            {{ meal.strMeal }}
+                        </h3>
+
+
+                        <!-- CATEGORY -->
+
+                        {% if meal.strCategory %}
+
+                            <span class="badge">
+
+                                🍽️ {{ meal.strCategory }}
+
+                            </span>
+
+                        {% endif %}
+
+
+                        <!-- AREA -->
+
+                        {% if meal.strArea %}
+
+                            <span class="badge">
+
+                                🌍 {{ meal.strArea }}
+
+                            </span>
+
+                        {% endif %}
+
+
+                        <!-- INGREDIENTS -->
+
+                        <div class="global-ingredients">
+
+                            <strong>
+                                🥕 Ingredients:
+                            </strong>
+
+                            <br>
+
+
+                            {% set ingredient_count =
+                                namespace(value=0) %}
+
+
+                            {% for i in range(1, 21) %}
+
+                                {% set ingredient =
+                                    meal["strIngredient" ~ i] %}
+
+
+                                {% if ingredient and
+                                      ingredient.strip() %}
+
+
+                                    {% if ingredient_count.value < 8 %}
+
+                                        {{ ingredient }}
+
+                                        {% if ingredient_count.value < 7 %}
+
+                                            ,
+
+                                        {% endif %}
+
+
+                                        {% set ingredient_count.value =
+                                            ingredient_count.value + 1 %}
+
+                                    {% endif %}
+
+                                {% endif %}
+
+                            {% endfor %}
+
+                        </div>
+
+
+                        <!-- VIEW GLOBAL RECIPE -->
+
+                        <a
+                            class="global-button"
+                            href="{{ url_for(
+                                'global_recipe',
+                                meal_id=meal.idMeal
+                            ) }}"
+                        >
+
+                            🍳 View Recipe →
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% endif %}
+
+
+
+    <!-- ================================= -->
+    <!-- NO RESULTS -->
+    <!-- ================================= -->
+
+    {% if not matching_recipes and not external_recipes %}
+
+        <div class="no-results">
+
+            <h2>😕 No Matching Recipes Found</h2>
+
+            <p>
+                We couldn't find recipes using those ingredients.
+            </p>
+
+            <p>
+                Try adding ingredients such as
+                rice, onion, tomato, potato or paneer.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- BACK -->
+
+    <a
+        class="back"
+        href="/dashboard"
+    >
+
+        ← Back to Dashboard
+
+    </a>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ recipe.name }} - Smart Recipe Making</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+            color: #222;
+        }
+
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        .navbar {
+            background: #5b2c2c;
+            color: white;
+            padding: 18px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h2 {
+            margin: 0;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+
+
+        /* =========================
+           MAIN CONTAINER
+        ========================= */
+
+        .container {
+            max-width: 1000px;
+            margin: 35px auto;
+            padding: 20px;
+        }
+
+
+        /* =========================
+           RECIPE CARD
+        ========================= */
+
+        .recipe-card {
+            background: white;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .recipe-title {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #5b2c2c;
+        }
+
+        .description {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+
+        /* =========================
+           BASIC INFORMATION
+        ========================= */
+
+        .info {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .info-box {
+            background: #f5f7fa;
+            padding: 18px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .info-box strong {
+            display: block;
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+
+        /* =========================
+           SECTIONS
+        ========================= */
+
+        .section {
+            margin-top: 30px;
+        }
+
+        .section h2 {
+            color: #5b2c2c;
+            border-bottom: 2px solid #5b2c2c;
+            padding-bottom: 8px;
+        }
+
+
+        /* =========================
+           INGREDIENTS
+        ========================= */
+
+        .ingredients {
+            line-height: 1.8;
+            white-space: pre-line;
+        }
+
+
+        /* =========================
+           INSTRUCTIONS
+        ========================= */
+
+        .instructions {
+            line-height: 1.9;
+            white-space: pre-line;
+        }
+
+
+        /* =========================
+           NUTRITION
+        ========================= */
+
+        .nutrition {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .nutrition-box {
+            padding: 18px;
+            background: #f5f7fa;
+            border-radius: 8px;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+
+        /* =========================
+           FAVORITE BUTTON
+        ========================= */
+
+        .favorite-button {
+            margin-top: 30px;
+            padding: 12px 20px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .favorite-button:hover {
+            opacity: 0.9;
+        }
+
+
+        /* =========================
+           BACK BUTTON
+        ========================= */
+
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 20px;
+            background: #5b2c2c;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        .back-button:hover {
+            opacity: 0.9;
+        }
+
+
+        /* =========================
+           ML RECOMMENDATIONS
+        ========================= */
+
+        .recommendations-section {
+            margin-top: 45px;
+            padding-top: 10px;
+        }
+
+        .recommendation-subtitle {
+            color: #777;
+            margin-bottom: 20px;
+        }
+
+        .recommendation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 20px;
+        }
+
+        .recommendation-card {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.10);
+            border: 1px solid #eeeeee;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .recommendation-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+        }
+
+        .recommendation-card h3 {
+            color: #2e7d32;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .recommendation-card p {
+            color: #555;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .recommendation-info {
+            margin: 12px 0;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .similarity {
+            display: inline-block;
+            padding: 6px 10px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .recommendation-button {
+            display: inline-block;
+            padding: 9px 14px;
+            background: #2e7d32;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .recommendation-button:hover {
+            background: #1b5e20;
+        }
+
+
+
+        /* =========================
+           RATINGS & REVIEWS
+        ========================= */
+
+        .rating-summary {
+            background: #f5f7fa;
+            padding: 22px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .average-rating {
+            font-size: 32px;
+            font-weight: bold;
+            color: #f39c12;
+        }
+
+        .stars {
+            color: #f39c12;
+            font-size: 24px;
+            letter-spacing: 2px;
+        }
+
+        .review-form {
+            background: #f9fafb;
+            padding: 22px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .review-form label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #444;
+        }
+
+        .rating-select,
+        .review-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 15px;
+            margin-bottom: 15px;
+        }
+
+        .review-textarea {
+            min-height: 110px;
+            resize: vertical;
+            font-family: Arial, sans-serif;
+        }
+
+        .review-button {
+            padding: 11px 20px;
+            background: #5b2c2c;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .review-button:hover {
+            opacity: 0.9;
+        }
+
+        .review-card {
+            background: #ffffff;
+            padding: 18px;
+            border-radius: 10px;
+            border: 1px solid #eeeeee;
+            margin-bottom: 15px;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .review-rating {
+            color: #f39c12;
+            font-size: 18px;
+        }
+
+        .review-date {
+            color: #888;
+            font-size: 13px;
+        }
+
+        .review-text {
+            color: #555;
+            line-height: 1.6;
+            white-space: pre-line;
+        }
+
+        .no-reviews {
+            color: #777;
+            padding: 15px 0;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            .navbar {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .navbar a {
+                margin-left: 10px;
+            }
+
+            .info,
+            .nutrition {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .recipe-card {
+                padding: 20px;
+            }
+
+        }
+
+        @media (max-width: 500px) {
+
+            .info,
+            .nutrition {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     NAVBAR
+========================= -->
+
+<div class="navbar">
+
+    <h2>
+        🍳 Smart Recipe Making
+    </h2>
+
+    <div>
+
+        <a href="/dashboard">
+            Dashboard
+        </a>
+
+        <a href="/logout">
+            Logout
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     MAIN CONTAINER
+========================= -->
+
+<div class="container">
+
+    <div class="recipe-card">
+
+
+        <!-- =========================
+             RECIPE TITLE
+        ========================= -->
+
+        <h1 class="recipe-title">
+            {{ recipe.name }}
+        </h1>
+
+        <p class="description">
+            {{ recipe.description }}
+        </p>
+
+
+        <!-- =========================
+             BASIC RECIPE INFORMATION
+        ========================= -->
+
+        <div class="info">
+
+            <div class="info-box">
+
+                <strong>
+                    ⏱️ {{ recipe.cooking_time }}
+                </strong>
+
+                Minutes
+
+            </div>
+
+
+            <div class="info-box">
+
+                <strong>
+                    🍽️ Easy
+                </strong>
+
+                Recipe
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             INGREDIENTS
+        ========================= -->
+
+        <div class="section">
+
+            <h2>
+                🥕 Ingredients
+            </h2>
+
+            <div class="ingredients">
+                {{ recipe.ingredients }}
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             INSTRUCTIONS
+        ========================= -->
+
+        <div class="section">
+
+            <h2>
+                👨‍🍳 Preparation Instructions
+            </h2>
+
+            <div class="instructions">
+                {{ recipe.instructions }}
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             NUTRITION INFORMATION
+        ========================= -->
+
+        <div class="section">
+
+            <h2>
+                🍎 Nutrition Information
+            </h2>
+
+            <div class="nutrition">
+
+
+                <div class="nutrition-box">
+
+                    <strong>
+                        🔥 {{ recipe.calories or 0 }}
+                    </strong>
+
+                    Calories
+
+                </div>
+
+
+                <div class="nutrition-box">
+
+                    <strong>
+                        💪 {{ recipe.protein or 0 }}g
+                    </strong>
+
+                    Protein
+
+                </div>
+
+
+                <div class="nutrition-box">
+
+                    <strong>
+                        🌾 {{ recipe.carbohydrates or 0 }}g
+                    </strong>
+
+                    Carbohydrates
+
+                </div>
+
+
+                <div class="nutrition-box">
+
+                    <strong>
+                        🥑 {{ recipe.fat or 0 }}g
+                    </strong>
+
+                    Fat
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             NUTRITION TIPS
+        ========================= -->
+
+        <div class="section">
+
+            <h2>
+                💡 Nutrition Tips
+            </h2>
+
+            <div class="nutrition-box">
+
+                {% if recipe.nutrition_tips %}
+
+                    {{ recipe.nutrition_tips }}
+
+                {% else %}
+
+                    Enjoy this recipe as part of a balanced diet.
+                    Adjust the portion size according to your nutritional needs.
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =========================
+             RATINGS & REVIEWS
+        ========================= -->
+
+        <div class="section">
+
+            <h2>
+                ⭐ Ratings & Reviews
+            </h2>
+
+            <div class="rating-summary">
+
+                {% if average_rating %}
+                    <div class="average-rating">
+                        {{ average_rating }} / 5
+                    </div>
+
+                    <div class="stars">
+                        {% for i in range(1, 6) %}
+                            {% if average_rating >= i %}
+                                ★
+                            {% else %}
+                                ☆
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <p>
+                        Based on {{ review_count }} review{% if review_count != 1 %}s{% endif %}
+                    </p>
+                {% else %}
+                    <div class="average-rating">
+                        No ratings yet
+                    </div>
+
+                    <p>
+                        Be the first person to review this recipe!
+                    </p>
+                {% endif %}
+
+            </div>
+
+
+            {% if user_review %}
+
+                <div class="review-form">
+
+                    <h3>Your Review</h3>
+
+                    <div class="review-rating">
+                        {% for i in range(1, 6) %}
+                            {% if user_review.rating >= i %}
+                                ★
+                            {% else %}
+                                ☆
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    {% if user_review.review %}
+                        <p class="review-text">
+                            {{ user_review.review }}
+                        </p>
+                    {% else %}
+                        <p class="review-text">
+                            You did not write a review.
+                        </p>
+                    {% endif %}
+
+                    <p class="review-date">
+                        You have already reviewed this recipe.
+                    </p>
+
+                </div>
+
+            {% else %}
+
+                <div class="review-form">
+
+                    <h3>Write a Review</h3>
+
+                    <form
+                        action="/review/{{ recipe.id }}"
+                        method="POST"
+                    >
+
+                        <label for="rating">
+                            Rating
+                        </label>
+
+                        <select
+                            id="rating"
+                            name="rating"
+                            class="rating-select"
+                            required
+                        >
+                            <option value="">
+                                Select a rating
+                            </option>
+                            <option value="5">★★★★★ - Excellent</option>
+                            <option value="4">★★★★☆ - Very Good</option>
+                            <option value="3">★★★☆☆ - Good</option>
+                            <option value="2">★★☆☆☆ - Fair</option>
+                            <option value="1">★☆☆☆☆ - Poor</option>
+                        </select>
+
+
+                        <label for="review">
+                            Your Review
+                        </label>
+
+                        <textarea
+                            id="review"
+                            name="review"
+                            class="review-textarea"
+                            placeholder="Write your experience with this recipe..."
+                            maxlength="1000"
+                        ></textarea>
+
+
+                        <button
+                            type="submit"
+                            class="review-button"
+                        >
+                            ⭐ Submit Review
+                        </button>
+
+                    </form>
+
+                </div>
+
+            {% endif %}
+
+
+            <h3>
+                Customer Reviews
+            </h3>
+
+            {% if reviews %}
+
+                {% for review in reviews %}
+
+                    <div class="review-card">
+
+                        <div class="review-header">
+
+                            <strong>
+                                User #{{ review.user_id }}
+                            </strong>
+
+                            <span class="review-date">
+                                {{ review.created_at.strftime('%d %b %Y') }}
+                            </span>
+
+                        </div>
+
+                        <div class="review-rating">
+
+                            {% for i in range(1, 6) %}
+                                {% if review.rating >= i %}
+                                    ★
+                                {% else %}
+                                    ☆
+                                {% endif %}
+                            {% endfor %}
+
+                        </div>
+
+                        {% if review.review %}
+
+                            <p class="review-text">
+                                {{ review.review }}
+                            </p>
+
+                        {% else %}
+
+                            <p class="review-text">
+                                No written review.
+                            </p>
+
+                        {% endif %}
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <p class="no-reviews">
+                    No reviews have been submitted yet.
+                </p>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- =========================
+             FAVORITE
+        ========================= -->
+
+        <form
+            action="/favorite/{{ recipe.id }}"
+            method="POST"
+        >
+
+            <button
+                type="submit"
+                class="favorite-button"
+            >
+                ❤️ Add / Remove Favorite
+            </button>
+
+        </form>
+
+
+        <!-- =========================
+             ML RECOMMENDATIONS
+        ========================= -->
+
+        {% if recommendations %}
+
+        <div class="section recommendations-section">
+
+            <h2>
+                🤖 Recommended Recipes
+            </h2>
+
+            <p class="recommendation-subtitle">
+                Recipes similar to <strong>{{ recipe.name }}</strong>
+                based on their ingredients and recipe information.
+            </p>
+
+
+            <div class="recommendation-grid">
+
+
+                {% for recommended_recipe, similarity_score in recommendations %}
+
+
+                <div class="recommendation-card">
+
+
+                    <h3>
+                        {{ recommended_recipe.name }}
+                    </h3>
+
+
+                    <p>
+                        {{ recommended_recipe.description }}
+                    </p>
+
+
+                    <div class="recommendation-info">
+
+                        ⏱️ {{ recommended_recipe.cooking_time }} min
+
+                        &nbsp; | &nbsp;
+
+                        🔥 {{ recommended_recipe.calories or 0 }} calories
+
+                    </div>
+
+
+                    <div class="similarity">
+
+                        🤖 Similarity:
+                        {{ (similarity_score * 100)|round|int }}%
+
+                    </div>
+
+
+                    <br>
+
+
+                    <a
+                        href="/recipe/{{ recommended_recipe.id }}"
+                        class="recommendation-button"
+                    >
+                        View Recipe →
+                    </a>
+
+
+                </div>
+
+
+                {% endfor %}
+
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+
+        <!-- =========================
+             BACK TO DASHBOARD
+        ========================= -->
+
+        <a
+            class="back-button"
+            href="/dashboard"
+        >
+            ← Back to Dashboard
+        </a>
+
+
+    </div>
+
+</div>
+
+
+</body>
+
+</html>
