@@ -1295,32 +1295,25 @@ def global_recipe(meal_id):
 
     except requests.RequestException:
         return "Unable to connect to recipe service."
+
+
 @app.route("/smart-search")
 def smart_search():
-
     ingredients_input = request.args.get("ingredients", "").strip()
 
     if not ingredients_input:
         return redirect(url_for("dashboard"))
 
-    # ==================================================
-    # USER INGREDIENTS
-    # ==================================================
+    user_ingredients = list(dict.fromkeys(
+        item.strip().lower()
+        for item in ingredients_input.split(",")
+        if item.strip()
+    ))
 
-    user_ingredients = [
-        ingredient.strip().lower()
-        for ingredient in ingredients_input.split(",")
-        if ingredient.strip()
-    ]
+    if not user_ingredients:
+        return redirect(url_for("dashboard"))
 
-    # Remove duplicate ingredients
-    user_ingredients = list(dict.fromkeys(user_ingredients))
-
-
-    # ==================================================
-    # LOCAL POSTGRESQL RECIPES + ML RECOMMENDATIONS
-    # ==================================================
-
+    # Search recipes stored in PostgreSQL
     recipes = Recipe.query.all()
 
     ml_scores = get_ingredient_ml_scores(
@@ -1330,296 +1323,151 @@ def smart_search():
 
     matching_recipes = []
 
-
     for recipe in recipes:
-
         recipe_ingredients = [
-            ingredient.strip().lower()
-            for ingredient in recipe.ingredients.split(",")
-            if ingredient.strip()
+            item.strip().lower()
+            for item in (recipe.ingredients or "").split(",")
+            if item.strip()
         ]
 
         matched_ingredients = []
 
-
-        # Compare user's ingredients with local recipe
         for user_ingredient in user_ingredients:
+            if any(
+                user_ingredient == recipe_ingredient
+                or user_ingredient in recipe_ingredient
+                or recipe_ingredient in user_ingredient
+                for recipe_ingredient in recipe_ingredients
+            ):
+                matched_ingredients.append(user_ingredient)
 
-            for recipe_ingredient in recipe_ingredients:
+        matched_ingredients = list(set(matched_ingredients))
 
-                if (
-                    user_ingredient == recipe_ingredient
-                    or user_ingredient in recipe_ingredient
-                    or recipe_ingredient in user_ingredient
-                ):
-
-                    matched_ingredients.append(
-                        user_ingredient
-                    )
-
-                    break
-
-
-        # Remove duplicates
-        matched_ingredients = list(
-            set(matched_ingredients)
-        )
-
-
-        # Only show recipes with at least one match
         if matched_ingredients:
-
-            # ------------------------------------------
-            # Ingredient Match %
-            # ------------------------------------------
-
-            ingredient_match_percentage = round(
-                (
-                    len(matched_ingredients)
-                    / len(user_ingredients)
-                ) * 100
+            match_percentage = round(
+                len(matched_ingredients)
+                / len(user_ingredients) * 100
             )
 
-
-            # ------------------------------------------
-            # ML Similarity %
-            # ------------------------------------------
-
-            ml_similarity_percentage = round(
+            ml_similarity = round(
                 ml_scores.get(recipe.id, 0) * 100
             )
 
-
-            # ------------------------------------------
-            # Combined Smart Score
-            # ------------------------------------------
-
             combined_score = round(
-                (
-                    ingredient_match_percentage * 0.7
-                )
-                +
-                (
-                    ml_similarity_percentage * 0.3
-                )
+                match_percentage * 0.7 + ml_similarity * 0.3
             )
 
-
             matching_recipes.append({
-
                 "recipe": recipe,
-
-                "matched_ingredients":
-                    matched_ingredients,
-
-                "match_percentage":
-                    ingredient_match_percentage,
-
-                "ml_similarity":
-                    ml_similarity_percentage,
-
-                "combined_score":
-                    combined_score,
-
-                "matched_count":
-                    len(matched_ingredients)
-
+                "matched_ingredients": matched_ingredients,
+                "match_percentage": match_percentage,
+                "ml_similarity": ml_similarity,
+                "combined_score": combined_score,
+                "matched_count": len(matched_ingredients)
             })
 
-
-    # ==================================================
-    # SORT LOCAL RECIPES
-    # ==================================================
-
     matching_recipes.sort(
-        key=lambda x: (
-            x["combined_score"],
-            x["match_percentage"],
-            x["matched_count"]
-        ),
+        key=lambda item: item["combined_score"],
         reverse=True
     )
 
-
-    # ==================================================
-    # THEMEALDB GLOBAL RECIPES
-    # ==================================================
-
+    # Search TheMealDB with a small request limit
     external_recipes = []
+    seen_meal_ids = set()
+    max_detail_requests = 2
+    detail_requests = 0
 
-
-    for ingredient in user_ingredients:
-
-        url = (
-            "https://www.themealdb.com/api/json/v1/1/filter.php"
-        )
-
-
+    for ingredient in user_ingredients[:2]:
         try:
-
             response = requests.get(
-                url,
+                "https://www.themealdb.com/api/json/v1/1/filter.php",
                 params={"i": ingredient},
-                timeout=10
+                timeout=3
             )
-
 
             if response.status_code != 200:
                 continue
 
+            meals = response.json().get("meals") or []
 
-            data = response.json()
-
-            meals = data.get("meals") or []
-
-
-            for meal in meals:
-
-                # Avoid duplicate global recipes
-                if any(
-                    existing["idMeal"] == meal["idMeal"]
-                    for existing in external_recipes
-                ):
-                    continue
-
-
-                # --------------------------------------
-                # Get complete recipe details
-                # --------------------------------------
-
-                detail_url = (
-                    "https://www.themealdb.com/api/json/v1/1/lookup.php"
-                )
-
-
-                try:
-
-                    detail_response = requests.get(
-                        detail_url,
-                        params={"i": meal["idMeal"]},
-                        timeout=10
-                    )
-
-
-                    if detail_response.status_code != 200:
-                        continue
-
-
-                    detail_data = detail_response.json()
-
-                    detail_meals = (
-                        detail_data.get("meals") or []
-                    )
-
-
-                    if not detail_meals:
-                        continue
-
-
-                    complete_meal = detail_meals[0]
-
-
-                except requests.RequestException:
-
-                    continue
-
-
-                # --------------------------------------
-                # Extract recipe ingredients
-                # --------------------------------------
-
-                recipe_ingredients = []
-
-
-                for i in range(1, 21):
-
-                    ingredient_value = complete_meal.get(
-                        f"strIngredient{i}"
-                    )
-
-
-                    if (
-                        ingredient_value
-                        and ingredient_value.strip()
-                    ):
-
-                        recipe_ingredients.append(
-                            ingredient_value.strip().lower()
-                        )
-
-
-                # --------------------------------------
-                # Calculate global ingredient matches
-                # --------------------------------------
-
-                matched_global_ingredients = []
-
-
-                for user_ingredient in user_ingredients:
-
-                    for recipe_ingredient in recipe_ingredients:
-
-                        if (
-                            user_ingredient == recipe_ingredient
-                            or user_ingredient in recipe_ingredient
-                            or recipe_ingredient in user_ingredient
-                        ):
-
-                            matched_global_ingredients.append(
-                                user_ingredient
-                            )
-
-                            break
-
-
-                matched_global_ingredients = list(
-                    set(matched_global_ingredients)
-                )
-
-
-                # --------------------------------------
-                # Global Match Percentage
-                # --------------------------------------
-
-                global_match_percentage = round(
-                    (
-                        len(matched_global_ingredients)
-                        / len(user_ingredients)
-                    ) * 100
-                )
-
-
-                # Add calculated information
-                complete_meal[
-                    "matched_ingredients"
-                ] = matched_global_ingredients
-
-
-                complete_meal[
-                    "match_percentage"
-                ] = global_match_percentage
-
-
-                complete_meal[
-                    "matched_count"
-                ] = len(
-                    matched_global_ingredients
-                )
-
-
-                external_recipes.append(
-                    complete_meal
-                )
-
-
-        except requests.RequestException:
-
+        except (requests.RequestException, ValueError):
             continue
 
+        for meal in meals:
+            meal_id = meal.get("idMeal")
 
-    # ==================================================
-    # SORT GLOBAL RECIPES BY INGREDIENT MATCH
-    # ==================================================
+            if not meal_id or meal_id in seen_meal_ids:
+                continue
+
+            seen_meal_ids.add(meal_id)
+
+            if detail_requests >= max_detail_requests:
+                break
+
+            detail_requests += 1
+
+            try:
+                detail_response = requests.get(
+                    "https://www.themealdb.com/api/json/v1/1/lookup.php",
+                    params={"i": meal_id},
+                    timeout=3
+                )
+
+                if detail_response.status_code != 200:
+                    continue
+
+                detail_meals = (
+                    detail_response.json().get("meals") or []
+                )
+
+                if not detail_meals:
+                    continue
+
+                complete_meal = detail_meals[0]
+
+            except (requests.RequestException, ValueError):
+                continue
+
+            recipe_ingredients = []
+
+            for i in range(1, 21):
+                value = complete_meal.get(f"strIngredient{i}")
+
+                if value and value.strip():
+                    recipe_ingredients.append(value.strip().lower())
+
+            matched_global_ingredients = []
+
+            for user_ingredient in user_ingredients:
+                if any(
+                    user_ingredient == recipe_ingredient
+                    or user_ingredient in recipe_ingredient
+                    or recipe_ingredient in user_ingredient
+                    for recipe_ingredient in recipe_ingredients
+                ):
+                    matched_global_ingredients.append(user_ingredient)
+
+            matched_global_ingredients = list(
+                set(matched_global_ingredients)
+            )
+
+            complete_meal["matched_ingredients"] = (
+                matched_global_ingredients
+            )
+
+            complete_meal["match_percentage"] = round(
+                len(matched_global_ingredients)
+                / len(user_ingredients) * 100
+            )
+
+            complete_meal["matched_count"] = len(
+                matched_global_ingredients
+            )
+
+            external_recipes.append(complete_meal)
+
+        if detail_requests >= max_detail_requests:
+            break
 
     external_recipes.sort(
         key=lambda meal: (
@@ -1629,24 +1477,13 @@ def smart_search():
         reverse=True
     )
 
-
-    # ==================================================
-    # SHOW ONLY TOP 10 GLOBAL RECIPES
-    # ==================================================
-
-    external_recipes = external_recipes[:10]
-
-
-    # ==================================================
-    # SEND RESULTS TO TEMPLATE
-    # ==================================================
-
     return render_template(
         "smart_results.html",
         matching_recipes=matching_recipes,
-        external_recipes=external_recipes,
+        external_recipes=external_recipes[:10],
         ingredients_input=ingredients_input
     )
+
 
 
 @app.route("/forgot-password", methods=["GET", "POST"])
