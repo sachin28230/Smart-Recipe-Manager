@@ -52,5 +52,99 @@
 </section>
 <section class="cta"><h2>Ready to discover your next meal?</h2><p>Create your account and start exploring smart recipes, nutrition insights and personalized recommendations.</p><a href="{{ url_for('register') }}">Create Your Account</a></section>
 <footer><strong>Smart Recipe Manager</strong><br>Smart recipes • AI recommendations • Better cooking</footer>
+
+<style>
+/* Smart Recipe Manager splash + onboarding */
+#app-splash{position:fixed;inset:0;z-index:100000;background:linear-gradient(180deg,#fff 0%,#f4fbf2 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;transition:opacity .35s ease}
+#app-splash img{width:min(48vw,260px);max-height:34vh;object-fit:contain}
+#app-splash .loading{margin-top:42px;color:#58a968;font-size:22px;letter-spacing:.3px}
+#app-splash .spinner{width:42px;height:42px;border:5px solid #dcefdc;border-top-color:#4caf50;border-radius:50%;animation:onboardSpin .8s linear infinite;margin:0 auto 14px}
+@keyframes onboardSpin{to{transform:rotate(360deg)}}
+#onboarding{position:fixed;inset:0;z-index:99999;background:#fff;display:none;flex-direction:column;align-items:center;justify-content:space-between;padding: max(24px,env(safe-area-inset-top)) 6% max(28px,env(safe-area-inset-bottom));font-family:Arial,Helvetica,sans-serif;color:#171717;overflow:auto}
+#onboarding .skip-row{width:100%;height:34px;display:flex;justify-content:flex-end;align-items:center;flex-shrink:0}
+#onboarding .skip-btn{border:0;background:transparent;color:#486b50;font-size:17px;cursor:pointer;padding:6px 0 6px 12px}
+#onboarding .slide-art{width:min(48vh,310px);height:min(48vh,465px);object-fit:contain;display:block;margin:auto auto 0}
+#onboarding .slide-copy{width:100%;text-align:center;margin-top:clamp(20px,5vh,52px)}
+#onboarding .slide-copy h1{font-size:clamp(27px,6vw,46px);font-weight:500;line-height:1.18;margin:0 0 38px;color:#171717}
+#onboarding .slide-copy p{font-size:clamp(17px,3.8vw,25px);line-height:1.55;color:#aaa;font-weight:300;max-width:620px;margin:0 auto}
+#onboarding .bottom-controls{width:100%;display:flex;flex-direction:column;align-items:center;gap:clamp(34px,7vh,68px);padding-top:24px;flex-shrink:0}
+#onboarding .dots{display:flex;align-items:center;justify-content:center;gap:12px;height:16px}
+#onboarding .dot{width:14px;height:14px;border-radius:20px;background:#e1e1e1;transition:all .2s}
+#onboarding .dot.active{width:42px;background:#4caf50}
+#onboarding .next-btn{width:100%;max-width:650px;min-height:68px;border:0;border-radius:50px;background:#4caf50;color:#fff;font-size:25px;font-weight:400;box-shadow:0 3px 5px #0002;cursor:pointer}
+#onboarding .next-btn:active{transform:scale(.99)}
+@media(max-height:720px){ #onboarding{padding-top:12px;padding-bottom:14px}#onboarding .slide-art{height:38vh;width:min(38vh,260px)}#onboarding .slide-copy{margin-top:12px}#onboarding .slide-copy h1{margin-bottom:14px}#onboarding .bottom-controls{gap:20px;padding-top:12px}#onboarding .next-btn{min-height:54px}}
+@media(min-width:700px){ #onboarding{padding-left:10%;padding-right:10%}#onboarding .slide-art{width:min(42vh,340px);height:min(42vh,500px)}}
+</style>
+<div id="app-splash" aria-label="Smart Recipe Manager loading screen">
+  <img src="{{ url_for('static', filename='smart_recipe_manager_logo.png') }}" alt="Smart Recipe Manager logo" onerror="this.style.display='none'">
+  <div class="loading"><div class="spinner"></div>Loading...</div>
+</div>
+<div id="onboarding" aria-label="Smart Recipe Manager introduction">
+  <div class="skip-row"><button class="skip-btn" type="button" id="onboardSkip">Skip</button></div>
+  <img class="slide-art" id="onboardArt" src="{{ url_for('static', filename='images/discover_recipes.png') }}" alt="Discover Delicious Recipes">
+  <div class="slide-copy">
+    <h1 id="onboardTitle">Discover Delicious Recipes</h1>
+    <p id="onboardDescription">Explore thousands of recipes from around the world tailored to your taste.</p>
+  </div>
+  <div class="bottom-controls">
+    <div class="dots" aria-label="Onboarding page indicator">
+      <span class="dot active"></span><span class="dot"></span><span class="dot"></span>
+    </div>
+    <button class="next-btn" type="button" id="onboardNext">Next</button>
+  </div>
+</div>
+<script>
+(function(){
+  const splash=document.getElementById('app-splash');
+  const onboarding=document.getElementById('onboarding');
+  const art=document.getElementById('onboardArt');
+  const title=document.getElementById('onboardTitle');
+  const description=document.getElementById('onboardDescription');
+  const next=document.getElementById('onboardNext');
+  const skip=document.getElementById('onboardSkip');
+  const dots=Array.from(document.querySelectorAll('#onboarding .dot'));
+  const slides=[
+    {image:"{{ url_for('static', filename='images/discover_recipes.png') }}",alt:'Discover Delicious Recipes',title:'Discover Delicious Recipes',description:'Explore thousands of recipes from around the world tailored to your taste.'},
+    {image:"{{ url_for('static', filename='images/ai_recipe_suggestions.png') }}",alt:'AI Recipe Suggestions',title:'AI Recipe Suggestions',description:'Tell us your ingredients and let AI create amazing recipes instantly.'},
+    {image:"{{ url_for('static', filename='images/save_your_favorites.png') }}",alt:'Save Your Favorites',title:'Save Your Favorites',description:"Bookmark recipes and access them anytime, even when you're cooking."}
+  ];
+  let current=0;
+  function finishOnboarding(){
+    try{localStorage.setItem('smartRecipeOnboardingDone','yes');}catch(e){}
+    // After onboarding, go straight to the existing Flask login page.
+    window.location.replace("{{ url_for('login') }}");
+  }
+  function showSlide(index){
+    current=index;
+    const slide=slides[current];
+    art.src=slide.image;art.alt=slide.alt;
+    title.textContent=slide.title;
+    description.textContent=slide.description;
+    dots.forEach((dot,i)=>dot.classList.toggle('active',i===current));
+    next.textContent=current===2?'Get Started':'Next';
+    skip.style.visibility=current===2?'hidden':'visible';
+  }
+  next.addEventListener('click',function(){if(current<2){showSlide(current+1);}else{finishOnboarding();}});
+  skip.addEventListener('click',finishOnboarding);
+  let alreadySeen=false;
+  try{alreadySeen=localStorage.getItem('smartRecipeOnboardingDone')==='yes';}catch(e){}
+  if(alreadySeen){
+    // Returning visitors should also go directly to login, not the marketing homepage.
+    window.location.replace("{{ url_for('login') }}");
+  } else {
+    document.body.style.overflow='hidden';
+    setTimeout(function(){
+      splash.style.opacity='0';
+      setTimeout(function(){
+        splash.style.display='none';
+        showSlide(0);
+        onboarding.style.display='flex';
+      },350);
+    },1800);
+  }
+})();
+</script>
+
 </body>
 </html>

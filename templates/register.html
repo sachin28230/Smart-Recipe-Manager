@@ -1,685 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
     <title>Create Account - Smart Recipe Manager</title>
-
-
     <style>
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
+        *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
+        body{min-height:100vh;background:#fff;color:#222;display:flex;justify-content:center;align-items:center;padding:24px 18px}
+        .register-container{width:100%;max-width:560px;margin:auto;padding:18px 0}
+        .brand-logo{display:block;width:155px;height:auto;max-height:175px;object-fit:contain;margin:0 auto 14px}
+        h1{text-align:center;font-size:clamp(29px,6vw,42px);font-weight:500;margin-bottom:12px;color:#171717}
+        .subtitle{text-align:center;color:#aaa;font-size:18px;line-height:1.5;margin-bottom:30px}
+        .flash-messages{margin:0 0 18px}
+        .flash-message{padding:12px 15px;border-radius:12px;margin-bottom:10px;text-align:center;font-size:14px;background:#ffebee;color:#b71c1c;border:1px solid #ffcdd2}
+        .field{position:relative;margin-bottom:18px}
+        .field-icon{position:absolute;left:20px;top:50%;transform:translateY(-50%);width:22px;height:22px;color:#555;pointer-events:none}
+        .field input{width:100%;height:66px;border:1.5px solid #777;border-radius:22px;padding:0 58px 0 62px;font-size:18px;color:#222;background:#fff;outline:none}
+        .field input::placeholder{color:#777;opacity:1}
+        .field input:focus{border-color:#4caf50;box-shadow:0 0 0 3px rgba(76,175,80,.12)}
+        .password-toggle{position:absolute;right:15px;top:50%;transform:translateY(-50%);width:36px;height:36px;border:0;background:transparent;color:#444;cursor:pointer;display:grid;place-items:center}
+        .password-toggle svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+        .password-strength{font-size:12px;color:#777;line-height:1.5;margin:-8px 8px 15px}
+        .password-strength ul{padding-left:18px;margin-top:4px;display:grid;grid-template-columns:1fr 1fr;gap:2px 10px}
+        .password-strength li.valid{color:#2e7d32}.password-strength li.invalid{color:#d32f2f}
+        .password-match{font-size:13px;font-weight:bold;margin:-8px 8px 15px}
+        .match-valid{color:#2e7d32}.match-invalid{color:#d32f2f}
+        .primary-btn{width:100%;height:70px;border:0;border-radius:23px;background:#4caf50;color:#fff;font-size:22px;cursor:pointer;box-shadow:0 3px 6px rgba(0,0,0,.15);margin-top:5px}
+        .primary-btn:hover{background:#388e3c}
+        .login-row{text-align:center;margin-top:35px;font-size:17px;color:#333}
+        .login-row a{margin-left:8px;color:#52745a;text-decoration:none}
+        .login-row a:hover{text-decoration:underline}
+        @media(max-width:480px){
+            body{padding:18px 22px}
+            .register-container{padding:8px 0}
+            .brand-logo{width:130px;max-height:145px;margin-bottom:10px}
+            h1{font-size:30px}
+            .subtitle{font-size:16px;margin-bottom:24px}
+            .field{margin-bottom:14px}
+            .field input{height:58px;border-radius:19px;font-size:16px;padding-left:56px}
+            .field-icon{left:18px;width:20px;height:20px}
+            .primary-btn{height:62px;border-radius:20px;font-size:20px}
+            .login-row{margin-top:25px;font-size:15px}
+            .password-strength{font-size:11px}
         }
-
-
-        body {
-            min-height: 100vh;
-            background: #f5f7f2;
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-
-        .register-container {
-            width: 420px;
-            background: white;
-            padding: 40px;
-
-            border-radius: 15px;
-
-            box-shadow:
-                0 5px 20px rgba(0, 0, 0, 0.15);
-        }
-
-
-        .logo {
-            text-align: center;
-            font-size: 30px;
-            margin-bottom: 10px;
-        }
-
-
-        h1 {
-            text-align: center;
-            color: #2e7d32;
-            margin-bottom: 10px;
-        }
-
-
-        .subtitle {
-            text-align: center;
-            color: #777;
-            margin-bottom: 30px;
-        }
-
-
-        label {
-            display: block;
-            margin-bottom: 7px;
-            font-weight: bold;
-            color: #444;
-        }
-
-
-        input {
-            width: 100%;
-            padding: 13px;
-
-            margin-bottom: 18px;
-
-            border: 1px solid #ccc;
-            border-radius: 7px;
-
-            font-size: 15px;
-        }
-
-
-        input:focus {
-            outline: none;
-            border-color: #2e7d32;
-        }
-
-
-        /* PASSWORD CONTAINER */
-
-        .password-container {
-            position: relative;
-            width: 100%;
-        }
-
-
-        .password-container input {
-            padding-right: 45px;
-        }
-
-
-        /* SHOW / HIDE PASSWORD BUTTON */
-
-        .show-password {
-            position: absolute;
-
-            right: 10px;
-            top: 40%;
-
-            transform: translateY(-50%);
-
-            border: none;
-            background: transparent;
-
-            cursor: pointer;
-
-            font-size: 19px;
-
-            padding: 5px;
-
-            color: #555;
-        }
-
-
-        .show-password:hover {
-            background: transparent;
-            color: #2e7d32;
-        }
-
-        .eye-icon {
-            width: 20px;
-            height: 20px;
-            display: block;
-            fill: none;
-            stroke: currentColor;
-            stroke-width: 1.8;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        .show-password.password-visible .eye-icon::after {
-            content: "";
-        }
-
-        .show-password.password-hidden {
-            position: absolute;
-        }
-
-        .show-password.password-hidden .eye-icon {
-            position: relative;
-        }
-
-        /* Slash shown when password is hidden */
-        .show-password.password-hidden::after {
-            content: "";
-            position: absolute;
-            width: 24px;
-            height: 2px;
-            background: currentColor;
-            left: 3px;
-            top: 50%;
-            transform: translateY(-50%) rotate(-40deg);
-            border-radius: 2px;
-            pointer-events: none;
-        }
-
-
-        /* PASSWORD STRENGTH */
-
-        .password-strength {
-            margin-top: -10px;
-            margin-bottom: 18px;
-
-            font-size: 13px;
-            line-height: 1.5;
-        }
-
-
-        .password-strength ul {
-            margin-top: 5px;
-            padding-left: 18px;
-        }
-
-
-        .password-strength li {
-            color: #777;
-            margin-bottom: 2px;
-        }
-
-
-        .password-strength li.valid {
-            color: #2e7d32;
-        }
-
-
-        .password-strength li.invalid {
-            color: #d32f2f;
-        }
-
-
-        .password-match {
-            margin-top: -10px;
-            margin-bottom: 18px;
-
-            font-size: 13px;
-            font-weight: bold;
-        }
-
-
-        .match-valid {
-            color: #2e7d32;
-        }
-
-
-        .match-invalid {
-            color: #d32f2f;
-        }
-
-
-        /* REGISTER BUTTON */
-
-        .register-btn {
-            width: 100%;
-
-            padding: 14px;
-
-            background: #2e7d32;
-
-            color: white;
-
-            border: none;
-
-            border-radius: 7px;
-
-            font-size: 16px;
-
-            cursor: pointer;
-        }
-
-
-        .register-btn:hover {
-            background: #1b5e20;
-        }
-
-
-        /* LOGIN LINK */
-
-        .login-link {
-            text-align: center;
-
-            margin-top: 20px;
-
-            color: #555;
-        }
-
-
-        .login-link a {
-            color: #2e7d32;
-
-            text-decoration: none;
-
-            font-weight: bold;
-        }
-
-
-        /* HOME LINK */
-
-        .home-link {
-            display: block;
-
-            text-align: center;
-
-            margin-top: 15px;
-
-            color: #777;
-
-            text-decoration: none;
-        }
-
-
-        .home-link:hover {
-            color: #2e7d32;
-        }
-
     </style>
-
 </head>
-
-
 <body>
+<main class="register-container">
+    <img class="brand-logo" src="{{ url_for('static', filename='smart_recipe_manager_logo.png') }}" alt="Smart Recipe Manager logo">
+    <h1>Create Account</h1>
+    <p class="subtitle">Join Smart Recipe Manager</p>
 
-
-<div class="register-container">
-
-
-    <!-- LOGO -->
-
-    <div class="logo">
-        🍳
-    </div>
-
-
-    <!-- TITLE -->
-
-    <h1>
-        Create Account
-    </h1>
-
-
-    <p class="subtitle">
-        Join Smart Recipe Manager
-    </p>
-
-
-    <!-- REGISTRATION FORM -->
-
-    <form
-        method="POST"
-        action="/register"
-        onsubmit="return validateRegistration()"
-    >
-
-
-        <!-- FULL NAME -->
-
-        <div class="form-group">
-
-            <label>
-                Full Name
-            </label>
-
-            <input
-                type="text"
-                name="name"
-                placeholder="Enter your full name"
-                required
-            >
-
-        </div>
-
-
-        <!-- EMAIL -->
-
-        <div class="form-group">
-
-            <label>
-                Email Address
-            </label>
-
-            <input
-                type="email"
-                name="email"
-                placeholder="Enter your email"
-                required
-            >
-
-        </div>
-
-
-        <!-- MOBILE NUMBER -->
-
-        <div class="form-group">
-
-            <label>
-                📱 Mobile Number
-            </label>
-
-            <input
-                type="tel"
-                name="phone_number"
-                placeholder="Enter your mobile number"
-                pattern="[0-9]{10}"
-                maxlength="10"
-                minlength="10"
-                inputmode="numeric"
-                required
-            >
-
-        </div>
-
-
-        <!-- PASSWORD -->
-
-        <div class="form-group">
-
-            <label>
-                Password
-            </label>
-
-            <div class="password-container">
-
-                <input
-                    type="password"
-                    id="registerPassword"
-                    name="password"
-                    placeholder="Create a password"
-                    minlength="8"
-                    required
-                    oninput="checkPasswordStrength()"
-                >
-
-                <button
-                    type="button"
-                    class="show-password password-hidden"
-                    onclick="togglePassword('registerPassword', this)"
-                    aria-label="Show password"
-                    title="Show password"
-                >
-                    <svg class="eye-icon" viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"></path>
-                        <circle cx="12" cy="12" r="2.5"></circle>
-                    </svg>
-                </button>
-
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash-message">{{ message }}</div>
+                {% endfor %}
             </div>
+        {% endif %}
+    {% endwith %}
 
-            <div class="password-strength">
-
-                <strong>Password requirements:</strong>
-
-                <ul>
-                    <li id="lengthRule">At least 8 characters</li>
-                    <li id="uppercaseRule">At least 1 uppercase letter</li>
-                    <li id="lowercaseRule">At least 1 lowercase letter</li>
-                    <li id="numberRule">At least 1 number</li>
-                    <li id="specialRule">At least 1 special character</li>
-                </ul>
-
-            </div>
-
+    <form method="POST" action="/register" onsubmit="return validateRegistration()">
+        <div class="field">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
+            <input type="text" name="name" placeholder="Full Name" autocomplete="name" required>
         </div>
-
-
-        <!-- CONFIRM PASSWORD -->
-
-        <div class="form-group">
-
-            <label>
-                Confirm Password
-            </label>
-
-            <div class="password-container">
-
-                <input
-                    type="password"
-                    id="confirmPassword"
-                    name="confirm_password"
-                    placeholder="Confirm your password"
-                    minlength="8"
-                    required
-                    oninput="checkPasswordMatch()"
-                >
-
-                <button
-                    type="button"
-                    class="show-password password-hidden"
-                    onclick="togglePassword('confirmPassword', this)"
-                    aria-label="Show password"
-                    title="Show password"
-                >
-                    <svg class="eye-icon" viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"></path>
-                        <circle cx="12" cy="12" r="2.5"></circle>
-                    </svg>
-                </button>
-
-            </div>
-
-            <div
-                id="passwordMatch"
-                class="password-match"
-            ></div>
-
+        <div class="field">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 6-10 7L2 6"></path></svg>
+            <input type="email" name="email" placeholder="Email" autocomplete="email" required>
         </div>
-
-
-        <!-- REGISTER -->
-
-        <button
-            type="submit"
-            class="register-btn"
-        >
-
-            Create Account
-
-        </button>
-
-
+        <div class="field">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.4 19.4 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7l.5 2.8a2 2 0 0 1-.6 1.8L7.7 9.6a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 1.8-.6l2.8.5a2 2 0 0 1 1.7 2.7z"></path></svg>
+            <input type="tel" name="phone_number" placeholder="Mobile Number" pattern="[0-9]{10}" maxlength="10" minlength="10" inputmode="numeric" autocomplete="tel" required>
+        </div>
+        <div class="field">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="10" width="18" height="12" rx="2"></rect><path d="M7 10V7a5 5 0 0 1 10 0v3"></path></svg>
+            <input type="password" id="registerPassword" name="password" placeholder="Create Password" minlength="8" autocomplete="new-password" required oninput="checkPasswordStrength()">
+            <button type="button" class="password-toggle" onclick="togglePassword('registerPassword',this)" aria-label="Show password" title="Show password"><svg viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"></path><circle cx="12" cy="12" r="2.5"></circle><path class="slash" d="M4 4 20 20"></path></svg></button>
+        </div>
+        <div class="password-strength">
+            <strong>Password requirements:</strong>
+            <ul>
+                <li id="lengthRule">At least 8 characters</li>
+                <li id="uppercaseRule">At least 1 uppercase letter</li>
+                <li id="lowercaseRule">At least 1 lowercase letter</li>
+                <li id="numberRule">At least 1 number</li>
+                <li id="specialRule">At least 1 special character</li>
+            </ul>
+        </div>
+        <div class="field">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="10" width="18" height="12" rx="2"></rect><path d="M7 10V7a5 5 0 0 1 10 0v3"></path></svg>
+            <input type="password" id="confirmPassword" name="confirm_password" placeholder="Confirm Password" minlength="8" autocomplete="new-password" required oninput="checkPasswordMatch()">
+            <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword',this)" aria-label="Show password" title="Show password"><svg viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"></path><circle cx="12" cy="12" r="2.5"></circle><path class="slash" d="M4 4 20 20"></path></svg></button>
+        </div>
+        <div id="passwordMatch" class="password-match"></div>
+        <button type="submit" class="primary-btn">Create Account</button>
     </form>
-
-
-    <!-- LOGIN -->
-
-    <p class="login-link">
-
-        Already have an account?
-
-        <a href="/login">
-            Login
-        </a>
-
-    </p>
-
-
-    <!-- HOME -->
-
-    <a
-        href="/"
-        class="home-link"
-    >
-
-        ← Back to Home
-
-    </a>
-
-
-</div>
-
-
-<!-- PASSWORD JAVASCRIPT -->
-
+    <p class="login-row">Already have an account? <a href="/login">Login</a></p>
+</main>
 <script>
-
-function togglePassword(inputId, button) {
-
-    const passwordInput =
-        document.getElementById(inputId);
-
-    if (passwordInput.type === "password") {
-
-        passwordInput.type = "text";
-
-        button.classList.remove("password-hidden");
-        button.classList.add("password-visible");
-
-        button.setAttribute("aria-label", "Hide password");
-        button.setAttribute("title", "Hide password");
-
-    } else {
-
-        passwordInput.type = "password";
-
-        button.classList.remove("password-visible");
-        button.classList.add("password-hidden");
-
-        button.setAttribute("aria-label", "Show password");
-        button.setAttribute("title", "Show password");
-
-    }
-
+function togglePassword(inputId,button){
+    const input=document.getElementById(inputId);
+    const hidden=input.type==="password";
+    input.type=hidden?"text":"password";
+    const slash=button.querySelector(".slash");
+    if(slash) slash.style.display=hidden?"none":"block";
+    button.setAttribute("aria-label",hidden?"Hide password":"Show password");
+    button.title=hidden?"Hide password":"Show password";
 }
-
-
-function updateRule(ruleId, valid) {
-
-    const rule =
-        document.getElementById(ruleId);
-
-    if (valid) {
-
-        rule.classList.add("valid");
-        rule.classList.remove("invalid");
-
-        rule.textContent =
-            "✓ " + rule.textContent.replace(/^✓ |^✗ /, "");
-
-    } else {
-
-        rule.classList.add("invalid");
-        rule.classList.remove("valid");
-
-        rule.textContent =
-            "✗ " + rule.textContent.replace(/^✓ |^✗ /, "");
-
-    }
-
+function updateRule(id,valid){
+    const rule=document.getElementById(id);
+    const original=rule.textContent.replace(/^[✓✗] /,"");
+    rule.textContent=(valid?"✓ ":"✗ ")+original;
+    rule.classList.toggle("valid",valid);
+    rule.classList.toggle("invalid",!valid);
 }
-
-
-function checkPasswordStrength() {
-
-    const password =
-        document.getElementById("registerPassword").value;
-
-    updateRule("lengthRule", password.length >= 8);
-    updateRule("uppercaseRule", /[A-Z]/.test(password));
-    updateRule("lowercaseRule", /[a-z]/.test(password));
-    updateRule("numberRule", /[0-9]/.test(password));
-    updateRule("specialRule", /[^A-Za-z0-9]/.test(password));
-
+function checkPasswordStrength(){
+    const p=document.getElementById("registerPassword").value;
+    updateRule("lengthRule",p.length>=8);
+    updateRule("uppercaseRule",/[A-Z]/.test(p));
+    updateRule("lowercaseRule",/[a-z]/.test(p));
+    updateRule("numberRule",/[0-9]/.test(p));
+    updateRule("specialRule",/[^A-Za-z0-9]/.test(p));
     checkPasswordMatch();
-
 }
-
-
-function checkPasswordMatch() {
-
-    const password =
-        document.getElementById("registerPassword").value;
-
-    const confirmPassword =
-        document.getElementById("confirmPassword").value;
-
-    const message =
-        document.getElementById("passwordMatch");
-
-    if (confirmPassword === "") {
-
-        message.textContent = "";
-
-        message.className = "password-match";
-
-        return;
-
-    }
-
-    if (password === confirmPassword) {
-
-        message.textContent = "✓ Passwords match";
-
-        message.className =
-            "password-match match-valid";
-
-    } else {
-
-        message.textContent = "✗ Passwords do not match";
-
-        message.className =
-            "password-match match-invalid";
-
-    }
-
+function checkPasswordMatch(){
+    const p=document.getElementById("registerPassword").value;
+    const c=document.getElementById("confirmPassword").value;
+    const msg=document.getElementById("passwordMatch");
+    if(!c){msg.textContent="";msg.className="password-match";return;}
+    const match=p===c;
+    msg.textContent=match?"✓ Passwords match":"✗ Passwords do not match";
+    msg.className="password-match "+(match?"match-valid":"match-invalid");
 }
-
-
-function validateRegistration() {
-
-    const password =
-        document.getElementById("registerPassword").value;
-
-    const confirmPassword =
-        document.getElementById("confirmPassword").value;
-
-    const strongPassword =
-        password.length >= 8 &&
-        /[A-Z]/.test(password) &&
-        /[a-z]/.test(password) &&
-        /[0-9]/.test(password) &&
-        /[^A-Za-z0-9]/.test(password);
-
-    if (!strongPassword) {
-
-        alert(
-            "Password must contain at least 8 characters, " +
-            "1 uppercase letter, 1 lowercase letter, " +
-            "1 number, and 1 special character."
-        );
-
-        return false;
-
-    }
-
-    if (password !== confirmPassword) {
-
-        alert("Passwords do not match.");
-
-        return false;
-
-    }
-
+function validateRegistration(){
+    const p=document.getElementById("registerPassword").value;
+    const c=document.getElementById("confirmPassword").value;
+    const strong=p.length>=8&&/[A-Z]/.test(p)&&/[a-z]/.test(p)&&/[0-9]/.test(p)&&/[^A-Za-z0-9]/.test(p);
+    if(!strong){alert("Password must contain at least 8 characters, 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.");return false;}
+    if(p!==c){alert("Passwords do not match.");return false;}
     return true;
-
 }
-
 </script>
-
-
 </body>
-
 </html>

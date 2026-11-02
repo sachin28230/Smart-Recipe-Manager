@@ -18,6 +18,7 @@ body{
     font-family:Arial,Helvetica,sans-serif;
     background:#f5faf5;
     color:#1e2e22;
+    padding-bottom:100px;
 }
 
 /* NAVBAR */
@@ -34,6 +35,7 @@ body{
     display:flex;
     justify-content:space-between;
     align-items:center;
+    gap:24px;
 
     border-bottom:1px solid #e0e9e0;
 
@@ -44,17 +46,21 @@ body{
     font-size:20px;
     font-weight:800;
     color:#1b5e20;
+    margin-left:auto;
+    text-align:right;
 }
 
-.navbar a{
+.top-back-button{
+    display:inline-flex;
+    align-items:center;
     color:#2e7d32;
     text-decoration:none;
-    margin-left:18px;
-    font-weight:700;
-    font-size:14px;
+    font-weight:800;
+    font-size:15px;
+    white-space:nowrap;
 }
 
-.navbar a:hover{
+.top-back-button:hover{
     color:#145a18;
 }
 
@@ -611,12 +617,99 @@ body{
 }
 
 
+/* FIXED BOTTOM NAVIGATION */
+
+.bottom-navigation{
+    position:fixed;
+    left:0;
+    bottom:0;
+    width:100%;
+    z-index:1000;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:12px;
+    padding:10px 12px;
+    padding-bottom:calc(10px + env(safe-area-inset-bottom));
+    background:rgba(255,255,255,.98);
+    border-top:1px solid #e0e9e0;
+    box-shadow:0 -3px 15px rgba(0,0,0,.10);
+}
+
+.bottom-nav-item{
+    flex:1;
+    max-width:150px;
+    min-width:0;
+    padding:8px 5px;
+    text-align:center;
+    text-decoration:none;
+    color:#2e7d32;
+    background:#f3f9f3;
+    border-radius:10px;
+}
+
+.bottom-nav-item span{
+    display:block;
+    font-size:22px;
+    margin-bottom:4px;
+}
+
+.bottom-nav-item small{
+    font-size:13px;
+    font-weight:800;
+}
+
+.bottom-nav-item:hover{
+    background:#e8f5e9;
+}
+
+.bottom-nav-item.logout-item{
+    color:#d32f2f;
+}
+
+.bottom-nav-item.logout-item:hover{
+    background:#ffebee;
+}
+
 /* MOBILE */
 
 @media(max-width:750px){
 
+    body{
+        padding-bottom:90px;
+    }
+
     .navbar{
         padding:13px 18px;
+        gap:14px;
+    }
+
+    .brand{
+        font-size:17px;
+    }
+
+    .top-back-button{
+        font-size:13px;
+    }
+
+    .bottom-navigation{
+        gap:5px;
+        padding:8px 5px;
+        padding-bottom:calc(8px + env(safe-area-inset-bottom));
+    }
+
+    .bottom-nav-item{
+        padding:8px 2px;
+        border-radius:8px;
+    }
+
+    .bottom-nav-item span{
+        font-size:20px;
+        margin-bottom:3px;
+    }
+
+    .bottom-nav-item small{
+        font-size:11px;
     }
 
     .info,
@@ -644,12 +737,18 @@ body{
 @media(max-width:480px){
 
     .navbar{
-        flex-direction:column;
+        flex-direction:row;
+        justify-content:space-between;
         gap:10px;
+        padding:12px 12px;
     }
 
-    .navbar a{
-        margin-left:8px;
+    .top-back-button{
+        font-size:12px;
+    }
+
+    .brand{
+        font-size:15px;
     }
 
     .info,
@@ -682,23 +781,13 @@ body{
 <!-- NAVBAR -->
 
 <nav class="navbar">
+    <a class="top-back-button" href="{{ url_for('dashboard') }}" aria-label="Back to Dashboard">
+        ← Back to Dashboard
+    </a>
 
     <div class="brand">
         🍴 Smart Recipe Manager
     </div>
-
-    <div>
-
-        <a href="{{ url_for('dashboard') }}">
-            Dashboard
-        </a>
-
-        <a href="{{ url_for('logout') }}">
-            Logout
-        </a>
-
-    </div>
-
 </nav>
 
 
@@ -1206,14 +1295,7 @@ body{
 {% endif %}
 
 
-<!-- BACK -->
 
-<a
-    class="back-button"
-    href="{{ url_for('dashboard') }}"
->
-    ← Back to Dashboard
-</a>
 
 
 </div>
@@ -1246,6 +1328,32 @@ function showImageFallback(image){
 
 </script>
 
+
+
+<!-- FIXED BOTTOM NAVIGATION -->
+<div class="bottom-navigation">
+
+    <a href="/profile" class="bottom-nav-item">
+        <span>👤</span>
+        <small>My Profile</small>
+    </a>
+
+    <a href="/favorites" class="bottom-nav-item">
+        <span>❤️</span>
+        <small>My Favorites</small>
+    </a>
+
+    <a href="{{ url_for('dashboard') }}" class="bottom-nav-item">
+        <span>🏠</span>
+        <small>Dashboard</small>
+    </a>
+
+    <a href="{{ url_for('logout') }}" class="bottom-nav-item logout-item">
+        <span>🚪</span>
+        <small>Logout</small>
+    </a>
+
+</div>
 
 </body>
 
